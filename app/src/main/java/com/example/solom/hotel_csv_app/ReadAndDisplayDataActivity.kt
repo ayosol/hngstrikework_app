@@ -5,6 +5,8 @@ import android.os.Bundle
 
 class ReadAndDisplayDataActivity : AppCompatActivity() {
 
+
+
     @Override
     protected fun onCreate(savedInstanceState: Bundle) {
         super.onCreate(savedInstanceState)
