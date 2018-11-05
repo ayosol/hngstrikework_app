@@ -18,7 +18,14 @@
         </activity>
         <activity android:name=".UploadFileActivity" />
         <activity android:name=".ReadAndDisplayDataActivity" />
-        <activity android:name=".ResponseActivity"></activity>
+        <activity android:name=".ResponseActivity" />
+        <activity android:name=".SplashScreenActivity" android:theme="@style/SplashSCreenTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
