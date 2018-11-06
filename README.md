@@ -1,4 +1,13 @@
-# hngstrikework_app
-### This is the Official repository for the HngStrikeWork Android Team
+                                                hngstrikework_app
+                      (This is the Official repository for the HngStrikeWork Android Team)
+                                                    
+                                                    Task
+To create a small tool that you can load a CSV of phone numbers and messages, and it will send the right message on the CSV to all the phone numbers via SMS.
 
-The android test task is to create a small tool that you can load a CSV of phone numbers, and it will send the message on the CSV via SMS to all the users there
+                                                   Activities
+MainActivity:
+ReadAndDisplayDataActivity:
+ResponseActivity:
+UploadFileActivity:
+
+
