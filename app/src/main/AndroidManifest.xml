@@ -30,7 +30,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+//<<<<<<< read_and_display_with_java_enyason
         <activity android:name=".ReadAndDisplayActivity" android:exported="true"></activity>
+=======
+        <activity
+            android:name=".ReadAndDisplayDataActivity_Java"
+            android:label="@string/title_activity_read_and_display_data__java"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+//>>>>>>> master
     </application>
 
 </manifest>
