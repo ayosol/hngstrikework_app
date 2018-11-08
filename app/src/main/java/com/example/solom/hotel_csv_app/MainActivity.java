@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int CSV_UPLOAD_REQUEST_CODE = 107;
     @BindView(R.id.readcsvfile)
     Button readCsvFile;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
