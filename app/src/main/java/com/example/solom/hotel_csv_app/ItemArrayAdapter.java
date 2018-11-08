@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ItemArrayAdapter extends ArrayAdapter<String[]>{
 
-    public List<String[]> scoreList = new ArrayList<String[]>();
+    public List<String[]> infoList = new ArrayList<String[]>();
 
     static class  ItemViewHolder{
         TextView phone_numbers;
@@ -25,18 +25,18 @@ public class ItemArrayAdapter extends ArrayAdapter<String[]>{
     }
 
     public void add(String[] object){
-        scoreList.add(object);
+        infoList.add(object);
         super.add(object);
     }
 
     @Override
     public int getCount(){
-        return this.scoreList.size();
+        return this.infoList.size();
     }
 
     @Override
     public String[] getItem(int position){
-        return this.scoreList.get(position);
+        return this.infoList.get(position);
     }
 
     @Override

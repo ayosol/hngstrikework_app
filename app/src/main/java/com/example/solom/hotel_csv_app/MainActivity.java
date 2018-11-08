@@ -34,10 +34,10 @@ public class MainActivity extends AppCompatActivity {
 
         InputStream inputStream = getResources().openRawResource(R.raw.stats);
         ReadAndDisplayDataActivity_Java csv = new ReadAndDisplayDataActivity_Java(inputStream);
-        List<String[]> scoreList = csv.read();
+        List<String[]> infoList = csv.read();
 
-        for(String [] scoreData : scoreList){
-            itemArrayAdapter.add(scoreData);
+        for(String [] info : infoList){
+            itemArrayAdapter.add(info);
         }
 
         if (!hasSendSmsPermission()){
