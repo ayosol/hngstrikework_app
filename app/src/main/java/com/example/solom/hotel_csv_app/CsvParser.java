@@ -15,15 +15,14 @@ import java.util.List;
 
 public class CsvParser {
 
-
-    public static List<DataCsv> readcsv(Context context) {
+    public static List<DataCsv> readcsv(Context context, String csv_path) {
 
         List<DataCsv> data = new ArrayList<>();
         CSVReader reader;
         String[] nextLine;
 
         try {
-
+            //TODO:Change the parameter of the InputStreamReader to the csv_path
             reader = new CSVReader(new InputStreamReader(context.getResources().openRawResource(R.raw.hng)));
             while ((nextLine = reader.readNext()) != null) {
                 // nextLine[] is an array of values from the line
