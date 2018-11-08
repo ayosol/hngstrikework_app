@@ -11,7 +11,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ResponseActivity extends AppCompatActivity {
-
+    private static final int CSV_UPLOAD_REQUEST_CODE=107;
     @BindView(R.id.readcsvfile)
     Button readcsvfile;
 
@@ -27,7 +27,7 @@ public class ResponseActivity extends AppCompatActivity {
         public void onClick(View v) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
-        startActivityForResult(intent, 7);
+        startActivityForResult(intent, CSV_UPLOAD_REQUEST_CODE);
     }
 });
         }
@@ -37,7 +37,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
 
         switch (requestCode) {
-        case 7:
+        case CSV_UPLOAD_REQUEST_CODE:
         if (resultCode == RESULT_OK) {
         String PathHolder = data.getData().getPath();
         Toast.makeText(getApplicationContext(), PathHolder, Toast.LENGTH_LONG).show();
