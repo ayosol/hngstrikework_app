@@ -6,8 +6,11 @@ To create a small tool that you can load a CSV of phone numbers and messages, an
 
                                                    Activities
 MainActivity:
+
 ReadAndDisplayDataActivity:
+
 ResponseActivity:
+
 UploadFileActivity:
 
 
