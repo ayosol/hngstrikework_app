@@ -4,8 +4,8 @@ import android.content.Context;
 
 import com.opencsv.CSVReader;
 
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,19 +15,15 @@ import java.util.List;
 
 public class CsvParser {
 
-    public static List<DataCsv> readcsv(Context context, String csv_path) {
+    public static List<DataCsv> readCsv(String csv_path) {
 
         List<DataCsv> data = new ArrayList<>();
         CSVReader reader;
         String[] nextLine;
 
         try {
-            //TODO:Change the parameter of the InputStreamReader to the csv_path
-            reader = new CSVReader(new InputStreamReader(context.getResources().openRawResource(R.raw.hng)));
+            reader = new CSVReader(new FileReader(csv_path));
             while ((nextLine = reader.readNext()) != null) {
-                // nextLine[] is an array of values from the line
-//                System.out.println(nextLine[0] + nextLine[1] + "etc...");
-//                Log.i("CSV", nextLine[0] + nextLine[1]);
                 data.add(new DataCsv("0" + nextLine[0], nextLine[1]));
             }
         } catch (IOException e) {
@@ -35,8 +31,6 @@ public class CsvParser {
         }
 
         return data;
-
     }
-
 
 }
