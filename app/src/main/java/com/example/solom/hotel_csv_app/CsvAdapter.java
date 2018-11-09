@@ -16,11 +16,10 @@ import java.util.List;
 
 public class CsvAdapter extends RecyclerView.Adapter<CsvAdapter.ViewHolderCSV> {
 
+    private List<DataCsv> csvList;
+    private Context context;
 
-    List<DataCsv> csvList;
-    Context context;
-
-    public CsvAdapter(List<DataCsv> csvList, Context context) {
+    CsvAdapter(List<DataCsv> csvList, Context context) {
         this.csvList = csvList;
         this.context = context;
     }
@@ -40,30 +39,22 @@ public class CsvAdapter extends RecyclerView.Adapter<CsvAdapter.ViewHolderCSV> {
         viewHolderCSV.tvPhone.setText(data.getPhone());
         viewHolderCSV.tvMsg.setText(data.getMessage());
 
-
     }
 
     @Override
     public int getItemCount() {
-
-//        if (!csvList.isEmpty() && csvList != null) {
         return csvList.size();
-//        }
-//        return 0;
     }
 
     class ViewHolderCSV extends RecyclerView.ViewHolder {
 
-
         TextView tvPhone, tvMsg;
 
-        public ViewHolderCSV(@NonNull View itemView) {
+        ViewHolderCSV(@NonNull View itemView) {
             super(itemView);
 
             tvPhone = itemView.findViewById(R.id.tv_phone);
             tvMsg = itemView.findViewById(R.id.tv_msg);
-
-
         }
     }
 }

@@ -29,9 +29,8 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-
-        data.addAll(CsvParser.readcsv(this, extras.getString(MainActivity.EXTRAS_CSV_PATH_NAME)));
+        assert extras != null;
+        data.addAll(CsvParser.readCsv(extras.getString(MainActivity.EXTRAS_CSV_PATH_NAME)));
         adapter.notifyDataSetChanged();
-
     }
 }
