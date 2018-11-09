@@ -14,7 +14,6 @@ public class DataCsv {
         this.message = message;
     }
 
-
     public String getPhone() {
         return phone;
     }

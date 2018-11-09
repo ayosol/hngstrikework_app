@@ -24,6 +24,7 @@
         <activity
             android:name=".ReadAndDisplayActivity"
             android:exported="true" />
+        <activity android:name=".smsSendingActivity" />
     </application>
 
 </manifest>

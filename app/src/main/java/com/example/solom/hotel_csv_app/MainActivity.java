@@ -26,7 +26,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     public static String EXTRAS_CSV_PATH_NAME = "MainActivity.PathHolder";
-    private static final int SMS_PERMISSION_CODE = 102;
+    public static final int SMS_PERMISSION_CODE = 102;
     private static final String TAG = "PERMISSION";
     private static final int CSV_UPLOAD_REQUEST_CODE = 107;
     @BindView(R.id.readcsvfile)
