@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CsvParser_2 {
+public class AltCsvParser {
 
 
     public static List<DataCsv> readCsv(Context context, String csv_path) throws IOException {
@@ -20,7 +20,7 @@ public class CsvParser_2 {
         File file = new File(csv_path);
 
         if (file.exists()) {
-            BufferedReader br = null;
+            BufferedReader br;
             br = new BufferedReader(new FileReader(file));
 
             {
