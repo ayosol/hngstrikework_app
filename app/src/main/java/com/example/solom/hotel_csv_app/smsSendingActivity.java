@@ -4,72 +4,58 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Telephony;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class ReadAndDisplayActivity extends AppCompatActivity {
-    public static final String SMS_SENT_ACTION = "com.example.solom.hotel_csv_app.SMS_SENT";
-    public static final String SMS_DELIVERED_ACTION = "com.example.solom.hotel_csv_app.SMS_DELIVERED";
-    public static final String EXTRA_NUMBER = "number";
-    public static final String EXTRA_MESSAGE = "message";
+public class smsSendingActivity extends Activity implements View.OnClickListener {
+    private static final String SMS_SENT_ACTION = "com.mycompany.myapp.SMS_SENT";
+    private static final String SMS_DELIVERED_ACTION = "com.mycompany.myapp.SMS_DELIVERED";
+    private static final String EXTRA_NUMBER = "number";
+    private static final String EXTRA_MESSAGE = "message";
+    // Initialize our sample numbers list.
+    private final List<String> numberList = new ArrayList<String>() {{
+        {
+            add("777");
+            add("222-222-2222");
+            add("333-333-3333");
+        }
+    }};
+
+    // Initialize our sample message list.
+    private final List<String> messageList = new ArrayList<String>() {{
+        {
+            add("Hello.");
+            add("Howdy.");
+            add("Hi.");
+        }
+    }};
+
+    private SmsManager smsManager;
     private IntentFilter intentFilter;
     private BroadcastReceiver resultsReceiver;
-
-    RecyclerView recyclerView;
-    CsvAdapter adapter;
-    RecyclerView.LayoutManager layoutManager;
-    private SmsManager smsManager;
-    private ArrayList<DataCsv> dataCopy;
-    private ArrayList<DataCsv> data;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_read_and_display);
-        Bundle extras = getIntent().getExtras();
+        setContentView(R.layout.activity_main);
+
+        findViewById(R.id.readcsvfile).setOnClickListener(this);
+
         smsManager = SmsManager.getDefault();
         resultsReceiver = new SmsResultReceiver();
 
         intentFilter = new IntentFilter(SMS_SENT_ACTION);
         intentFilter.addAction(SMS_DELIVERED_ACTION);
-
-        data = new ArrayList<>();
-        recyclerView = findViewById(R.id.rv_csv);
-        adapter = new CsvAdapter(data, this);
-        layoutManager = new LinearLayoutManager(this);
-
-
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(layoutManager);
-        CsvAdapter.OnItemClickListener onItemClickListener = new CsvAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int adapterPosition) {
-                displayDetailsDialog(adapterPosition);
-//                dataCopy = (ArrayList<DataCsv>) data.clone();
-//                sendNextSMS();
-            }
-        };
-        adapter.setOnItemClickListener(onItemClickListener);
-        recyclerView.setAdapter(adapter);
-        assert extras != null;
-        data.addAll(CsvParser.readCsv(extras.getString(MainActivity.EXTRAS_CSV_PATH_NAME)));
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -84,42 +70,24 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         unregisterReceiver(resultsReceiver);
     }
 
-    public void delaySms(final int i, final ArrayList<DataCsv> contact) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                smsManager.sendTextMessage(contact.get(i).getPhone(), null, contact.get(i).getMessage(), null, null);
-            }
-        }, 2000);
+    public void onClick(View v) {
+        v.setEnabled(false);
+        sendNextMessage();
     }
 
-    private void sendMultipleSMS(ArrayList<DataCsv> selectedData) {
-        //	displayDialog();
-        for (int i = 0; i < selectedData.size(); i++) {
-            delaySms(i, selectedData);
-        }
-        //dismissDialog();
-    }
-
-    private void sendSingleSMS(int pos) {
-        //	displayDialog();
-        smsManager.sendTextMessage(data.get(pos).getPhone(), null, data.get(pos).getMessage(), null, null);
-        //dismissDialog();
-    }
-
-    private void sendNextSMS() {
+    private void sendNextMessage() {
         // We're going to remove numbers and messages from
         // the lists as we send, so if the lists are empty, we're done.
-        if (dataCopy.size() == 0) {
+        if (numberList.size() == 0) {
             return;
         }
 
         // The list size is a sufficiently unique request code,
         // for the PendingIntent since it decrements for each send.
-        int requestCode = dataCopy.size();
+        int requestCode = numberList.size();
 
-        String number = dataCopy.get(0).getPhone();
-        String message = dataCopy.get(0).getMessage();
+        String number = numberList.get(0);
+        String message = messageList.get(0);
 
         // The Intents must be implicit for this example,
         // as we're registering our Receiver dynamically.
@@ -150,33 +118,8 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         smsManager.sendTextMessage(number, null, message, sentPI, deliveredPI);
 
         // Remove the number and message we just sent to from the lists.
-        dataCopy.remove(0);
-    }
-
-    private void displayDetailsDialog(final int pos) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setView();
-        builder.setTitle(data.get(pos).getMessage());
-        builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                sendSingleSMS(pos);
-            }
-        });
-        builder.setNeutralButton("Schedule", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(ReadAndDisplayActivity.this, "Coming Soon...", Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        numberList.remove(0);
+        messageList.remove(0);
     }
 
     private class SmsResultReceiver extends BroadcastReceiver {
@@ -198,7 +141,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
                 int resultCode = getResultCode();
                 result = "Send result : " + translateSentResult(resultCode);
                 // The current send is complete. Send the next one.
-                sendNextSMS();
+                sendNextMessage();
             }
             // This is the result for a delivery.
             else if (SMS_DELIVERED_ACTION.equals(action)) {
