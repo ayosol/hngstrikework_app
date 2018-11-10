@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Telephony;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -58,8 +60,9 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         CsvAdapter.OnItemClickListener onItemClickListener = new CsvAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int adapterPosition) {
-                dataCopy = (ArrayList<DataCsv>) data.clone();
-                sendNextSMS();
+                displayDetailsDialog(adapterPosition);
+//                dataCopy = (ArrayList<DataCsv>) data.clone();
+//                sendNextSMS();
             }
         };
         adapter.setOnItemClickListener(onItemClickListener);
@@ -81,13 +84,27 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         unregisterReceiver(resultsReceiver);
     }
 
-    public void delaySms(final int i, final SmsManager sm, final String[] nums, final String[] msg) {
+    public void delaySms(final int i, final ArrayList<DataCsv> contact) {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                sm.sendTextMessage(nums[i], null, msg[i], null, null);
+                smsManager.sendTextMessage(contact.get(i).getPhone(), null, contact.get(i).getMessage(), null, null);
             }
         }, 2000);
+    }
+
+    private void sendMultipleSMS(ArrayList<DataCsv> selectedData) {
+        //	displayDialog();
+        for (int i = 0; i < selectedData.size(); i++) {
+            delaySms(i, selectedData);
+        }
+        //dismissDialog();
+    }
+
+    private void sendSingleSMS(int pos) {
+        //	displayDialog();
+        smsManager.sendTextMessage(data.get(pos).getPhone(), null, data.get(pos).getMessage(), null, null);
+        //dismissDialog();
     }
 
     private void sendNextSMS() {
@@ -134,6 +151,32 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
 
         // Remove the number and message we just sent to from the lists.
         dataCopy.remove(0);
+    }
+
+    private void displayDetailsDialog(final int pos) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setView();
+        builder.setTitle(data.get(pos).getMessage());
+        builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                sendSingleSMS(pos);
+            }
+        });
+        builder.setNeutralButton("Schedule", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(ReadAndDisplayActivity.this, "Coming Soon...", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private class SmsResultReceiver extends BroadcastReceiver {
