@@ -61,8 +61,6 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int adapterPosition) {
                 displayDetailsDialog(adapterPosition);
-//                dataCopy = (ArrayList<DataCsv>) data.clone();
-//                sendNextSMS();
             }
         };
         adapter.setOnItemClickListener(onItemClickListener);
@@ -70,6 +68,13 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         assert extras != null;
         data.addAll(CsvParser.readCsv(extras.getString(MainActivity.EXTRAS_CSV_PATH_NAME)));
         adapter.notifyDataSetChanged();
+        findViewById(R.id.send_fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataCopy = (ArrayList<DataCsv>) data.clone();
+                sendNextSMS();
+            }
+        });
     }
 
     @Override
@@ -79,8 +84,8 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         unregisterReceiver(resultsReceiver);
     }
 
@@ -107,6 +112,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         //dismissDialog();
     }
 
+    //Sends SMS to all numbers in CSV
     private void sendNextSMS() {
         // We're going to remove numbers and messages from
         // the lists as we send, so if the lists are empty, we're done.
