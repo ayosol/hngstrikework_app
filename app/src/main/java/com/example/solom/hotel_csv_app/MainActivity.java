@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int CSV_UPLOAD_REQUEST_CODE = 107;
     @BindView(R.id.readcsvfile)
     Button readCsvFile;
+    public static final String EXTRAS_CSV_FILE_NAME="MainActivity.filePath";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), csvFileNname, Toast.LENGTH_LONG).show();
                         Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
                         readAndDisplayIntent.putExtra(EXTRAS_CSV_PATH_NAME, PathHolder);
+                        readAndDisplayIntent.putExtra(EXTRAS_CSV_FILE_NAME, csvFileNname);
                         startActivity(readAndDisplayIntent);
                     } else {
                         Toast.makeText(getApplicationContext(), "File is not a csv", Toast.LENGTH_SHORT).show();
