@@ -11,12 +11,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Telephony;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -36,6 +39,8 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     private SmsManager smsManager;
     private ArrayList<DataCsv> dataCopy;
     private ArrayList<DataCsv> data;
+    private String csvPath;
+    private String csvFileName;
 
 
     @Override
@@ -43,6 +48,13 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_and_display);
         Bundle extras = getIntent().getExtras();
+        assert extras != null;
+        csvPath = extras.getString(MainActivity.EXTRAS_CSV_PATH_NAME);
+        csvFileName = extras.getString(MainActivity.EXTRAS_CSV_FILE_NAME);
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setTitle(csvFileName);
+
         smsManager = SmsManager.getDefault();
         resultsReceiver = new SmsResultReceiver();
 
@@ -61,15 +73,19 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int adapterPosition) {
                 displayDetailsDialog(adapterPosition);
-//                dataCopy = (ArrayList<DataCsv>) data.clone();
-//                sendNextSMS();
             }
         };
         adapter.setOnItemClickListener(onItemClickListener);
         recyclerView.setAdapter(adapter);
-        assert extras != null;
-        data.addAll(CsvParser.readCsv(extras.getString(MainActivity.EXTRAS_CSV_PATH_NAME)));
+        data.addAll(CsvParser.readCsv(csvPath));
         adapter.notifyDataSetChanged();
+        findViewById(R.id.send_fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataCopy = (ArrayList<DataCsv>) data.clone();
+                sendNextSMS();
+            }
+        });
     }
 
     @Override
@@ -79,8 +95,8 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         unregisterReceiver(resultsReceiver);
     }
 
@@ -107,6 +123,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         //dismissDialog();
     }
 
+    //Sends SMS to all numbers in CSV
     private void sendNextSMS() {
         // We're going to remove numbers and messages from
         // the lists as we send, so if the lists are empty, we're done.
@@ -258,5 +275,22 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
                     return "Unknown status code";
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.other_options_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                break;
+            case R.id.menu_help:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -11,6 +11,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int CSV_UPLOAD_REQUEST_CODE = 107;
     @BindView(R.id.readcsvfile)
     Button readCsvFile;
+    public static final String EXTRAS_CSV_FILE_NAME="MainActivity.filePath";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), csvFileNname, Toast.LENGTH_LONG).show();
                         Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
                         readAndDisplayIntent.putExtra(EXTRAS_CSV_PATH_NAME, PathHolder);
+                        readAndDisplayIntent.putExtra(EXTRAS_CSV_FILE_NAME, csvFileNname);
                         startActivity(readAndDisplayIntent);
                     } else {
                         Toast.makeText(getApplicationContext(), "File is not a csv", Toast.LENGTH_SHORT).show();
@@ -111,5 +115,26 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, CSV_UPLOAD_REQUEST_CODE);
             }
         }
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_schedule_task:
+                break;
+            case R.id.menu_settings:
+                break;
+            case R.id.menu_help:
+                break;
+            case R.id.menu_exit:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
