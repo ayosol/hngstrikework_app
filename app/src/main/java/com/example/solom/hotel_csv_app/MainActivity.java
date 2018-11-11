@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         assert PathHolder != null;
-                        String csvFileNname = PathHolder.substring(PathHolder.lastIndexOf('/')+1);
+                        String csvFileNname = PathHolder.substring(PathHolder.lastIndexOf('/') + 1);
                         Toast.makeText(getApplicationContext(), csvFileNname, Toast.LENGTH_LONG).show();
                         Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
                         readAndDisplayIntent.putExtra(EXTRAS_CSV_PATH_NAME, PathHolder);
@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -124,10 +125,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_schedule_task:
                 break;
+            case R.id.menu_stat:
+                break;
             case R.id.menu_settings:
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 break;
             case R.id.menu_help:
                 break;

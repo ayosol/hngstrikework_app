@@ -1,0 +1,31 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/pref_show_recent"
+        android:summary="@string/show_recent_files_summary"
+        android:title="@string/show_recent_files" />
+
+    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <ListPreference
+        android:defaultValue="1"
+        android:enabled="false"
+        android:entries="@array/pref_max_recent_values"
+        android:entryValues="@array/pref_max_recent_values"
+        android:key="@string/pref_max_recent_files"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/max_recent_files" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/pref_schedule_notification"
+        android:summary="@string/schedule_notification_summary"
+        android:title="@string/schedule_notification" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/pref_show_estimate"
+        android:summary="@string/show_estimate_summary"
+        android:title="@string/show_estimate" />
+</PreferenceScreen>

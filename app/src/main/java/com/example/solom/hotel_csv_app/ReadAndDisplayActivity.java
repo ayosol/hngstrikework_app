@@ -23,6 +23,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.solom.hotel_csv_app.adapter.CsvAdapter;
+
 import java.util.ArrayList;
 
 public class ReadAndDisplayActivity extends AppCompatActivity {
@@ -287,6 +289,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_settings:
+                startActivity(new Intent(ReadAndDisplayActivity.this, SettingsActivity.class));
                 break;
             case R.id.menu_help:
                 break;
