@@ -5,6 +5,9 @@
         android:id="@+id/menu_schedule_task"
         android:title="@string/schedule_task" />
     <item
+        android:id="@+id/menu_stat"
+        android:title="@string/statistics" />
+    <item
         android:id="@+id/menu_settings"
         android:title="@string/settings" />
     <item

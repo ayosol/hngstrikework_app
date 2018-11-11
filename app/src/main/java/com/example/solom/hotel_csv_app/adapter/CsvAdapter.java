@@ -1,4 +1,4 @@
-package com.example.solom.hotel_csv_app;
+package com.example.solom.hotel_csv_app.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.solom.hotel_csv_app.DataCsv;
+import com.example.solom.hotel_csv_app.R;
 
 import java.util.List;
 
