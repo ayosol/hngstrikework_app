@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CSV SMS SENDER</string>
+    <string name="app_name">Manager\'s Messanger</string>
     <string name="title_activity_read_and_display_data__java">ReadAndDisplayDataActivity_Java
     </string>
     <string name="schedule_task">Schedule Task</string>
