@@ -9,9 +9,6 @@
     </style>
 
     <!-- Stlye for Splash screen -->
-    <style name="SplashSCreenTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:windowBackground">@drawable/splash_screen_background</item>
-    </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
