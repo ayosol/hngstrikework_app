@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Telephony;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,6 +39,8 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     private SmsManager smsManager;
     private ArrayList<DataCsv> dataCopy;
     private ArrayList<DataCsv> data;
+    private String csvPath;
+    private String csvFileName;
 
 
     @Override
@@ -45,6 +48,13 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_and_display);
         Bundle extras = getIntent().getExtras();
+        assert extras != null;
+        csvPath = extras.getString(MainActivity.EXTRAS_CSV_PATH_NAME);
+        csvFileName = extras.getString(MainActivity.EXTRAS_CSV_FILE_NAME);
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setTitle(csvFileName);
+
         smsManager = SmsManager.getDefault();
         resultsReceiver = new SmsResultReceiver();
 
@@ -67,8 +77,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         };
         adapter.setOnItemClickListener(onItemClickListener);
         recyclerView.setAdapter(adapter);
-        assert extras != null;
-        data.addAll(CsvParser.readCsv(extras.getString(MainActivity.EXTRAS_CSV_PATH_NAME)));
+        data.addAll(CsvParser.readCsv(csvPath));
         adapter.notifyDataSetChanged();
         findViewById(R.id.send_fab).setOnClickListener(new View.OnClickListener() {
             @Override
