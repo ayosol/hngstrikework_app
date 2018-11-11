@@ -11,6 +11,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -111,5 +113,26 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, CSV_UPLOAD_REQUEST_CODE);
             }
         }
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_schedule_task:
+                break;
+            case R.id.menu_settings:
+                break;
+            case R.id.menu_help:
+                break;
+            case R.id.menu_exit:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
