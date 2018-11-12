@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Manager\'s Messanger</string>
+    <string name="app_name">Manager\'s Messenger</string>
     <string name="title_activity_read_and_display_data__java">ReadAndDisplayDataActivity_Java
     </string>
     <string name="schedule_task">Scheduled Task</string>
@@ -28,6 +28,10 @@
     <string name="pref_max_recent_files">pref_max_recent_files</string>
     <string name="pref_schedule_notification">pref_schedule_notification</string>
     <string name="pref_show_estimate">pref_show_estimate</string>
+//<<<<<<< ui-based-changes
+//=======
+    <string name="statistics">Statistics</string>
+/>>>>>>> master
     <string-array name="pref_max_recent_values">
         <item>1</item>
         <item>2</item>
