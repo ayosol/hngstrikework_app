@@ -1,5 +1,5 @@
                                                 hngstrikework_app
-                      (This is the Official repository for the HngStrikeWork Android Team)
+                      (This is the Official repository for the Hotels.ng Student Work Android Team)
                                                     
                                                     Task
 To create a small tool that you can load a CSV of phone numbers and messages, and it will send the right message on the CSV to all the phone numbers via SMS.
