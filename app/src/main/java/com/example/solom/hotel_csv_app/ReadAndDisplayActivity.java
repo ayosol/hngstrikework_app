@@ -41,8 +41,6 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     private SmsManager smsManager;
     private ArrayList<DataCsv> dataCopy;
     private ArrayList<DataCsv> data;
-    private String csvPath;
-    private String csvFileName;
 
 
     @Override
@@ -51,11 +49,9 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_read_and_display);
         Bundle extras = getIntent().getExtras();
         assert extras != null;
-        csvPath = extras.getString(MainActivity.EXTRAS_CSV_PATH_NAME);
-        csvFileName = extras.getString(MainActivity.EXTRAS_CSV_FILE_NAME);
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setTitle(csvFileName);
+        String csvPath = extras.getString(MainActivity.EXTRAS_CSV_PATH_NAME);
+        String csvFileName = extras.getString(MainActivity.EXTRAS_CSV_FILE_NAME);
+        setupActionBar(csvFileName);
 
         smsManager = SmsManager.getDefault();
         resultsReceiver = new SmsResultReceiver();
@@ -88,6 +84,16 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
                 sendNextSMS();
             }
         });
+    }
+
+    private void setupActionBar(String title) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(title);
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+
+        }
     }
 
     @Override
