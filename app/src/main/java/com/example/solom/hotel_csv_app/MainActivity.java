@@ -36,16 +36,12 @@ public class MainActivity extends AppCompatActivity {
     public static final int SMS_PERMISSION_CODE = 102;
     private static final String TAG = "PERMISSION";
     private static final int CSV_UPLOAD_REQUEST_CODE = 107;
-//<<<<<<< ui-based-changes
+
     @BindView(R.id.upload_fab)
     FloatingActionButton readCsvFile;
 
     public static final String EXTRAS_CSV_FILE_NAME = "MainActivity.filePath";
-//=======
-    @BindView(R.id.readcsvfile)
-    ImageButton readCsvFile;
-    public static final String EXTRAS_CSV_FILE_NAME="MainActivity.filePath";
-//>>>>>>> master
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
