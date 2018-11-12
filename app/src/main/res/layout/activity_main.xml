@@ -9,7 +9,8 @@
     <RelativeLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
@@ -51,7 +52,8 @@
         android:id="@+id/recently_opened_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recently_opened_rv"
@@ -61,6 +63,12 @@
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/upload_fab_2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="51dp"
+            android:layout_marginEnd="47dp"
+            android:src="@drawable/upload_file"
+            android:tint="@color/white" />
     </RelativeLayout>
 </RelativeLayout>

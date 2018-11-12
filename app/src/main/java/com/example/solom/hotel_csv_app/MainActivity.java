@@ -2,10 +2,12 @@ package com.example.solom.hotel_csv_app;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -30,17 +32,27 @@ public class MainActivity extends AppCompatActivity {
     public static String EXTRAS_CSV_PATH_NAME = "MainActivity.PathHolder";
     public static final int SMS_PERMISSION_CODE = 102;
     private static final String TAG = "PERMISSION";
+    private SharedPreferences preferences;
     private static final int CSV_UPLOAD_REQUEST_CODE = 107;
     @BindView(R.id.upload_fab)
     FloatingActionButton readCsvFile;
 
     public static final String EXTRAS_CSV_FILE_NAME = "MainActivity.filePath";
+    private boolean showRecentFiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        //Reading the show recent files preference from settings
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        showRecentFiles = preferences.getBoolean(this.getString(R.string.pref_show_recent), false);
+        if (showRecentFiles) {
+            //TODO: Check if there are any saved recently opened file
+            //TODO: Hide or Display Recently Saved RecyclerView
+        }
         readCsvFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,8 +87,16 @@ public class MainActivity extends AppCompatActivity {
                         final Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
                         readAndDisplayIntent.putExtra(EXTRAS_CSV_PATH_NAME, PathHolder);
                         readAndDisplayIntent.putExtra(EXTRAS_CSV_FILE_NAME, csvFileNname);
-                        startActivity(readAndDisplayIntent);
 
+                        if (showRecentFiles) {
+                            //TODO:Read recently saved array from Shared Preference
+                            //TODO: Check length of recently saved array
+                            //TODO: If greater than max_recent_files
+                            //TODO: Copy file from current path to our own directory
+                            //TODO: Add path to array
+                            //TODO: Save the array to Shared Preference
+                        }
+                        startActivity(readAndDisplayIntent);
                     } else {
                         Toast.makeText(getApplicationContext(), "File is not a csv", Toast.LENGTH_SHORT).show();
                     }
