@@ -71,11 +71,11 @@
             </LinearLayout>
 
             <CheckBox
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:gravity="center" />
+                android:gravity="center"
+                android:visibility="invisible"/>
 
         </LinearLayout>
     </android.support.v7.widget.CardView>

@@ -49,8 +49,6 @@ public class smsSendingActivity extends Activity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.readcsvfile).setOnClickListener(this);
-
         smsManager = SmsManager.getDefault();
         resultsReceiver = new SmsResultReceiver();
 

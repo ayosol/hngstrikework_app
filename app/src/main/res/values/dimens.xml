@@ -1,3 +1,4 @@
-<resources>
-    <dimen name="fab_margin">16dp</dimen>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="fab_size_mini" tools:override="true">80dp</dimen>
+    <dimen name="fab_content_size" tools:override="true">70dp</dimen>
 </resources>
