@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.solom.hotel_csv_app.utils.PathUtil;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "PERMISSION";
     private static final int CSV_UPLOAD_REQUEST_CODE = 107;
     @BindView(R.id.readcsvfile)
-    Button readCsvFile;
+    ImageButton readCsvFile;
     public static final String EXTRAS_CSV_FILE_NAME="MainActivity.filePath";
 
     @Override
