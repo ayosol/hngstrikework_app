@@ -13,7 +13,17 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_above="@id/upload_fab"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="15dp"
+            android:gravity="center"
+            android:paddingBottom="16dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:text="click the button below to upload a csv and get started"
+            android:textSize="18sp" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/upload_fab"
@@ -25,7 +35,7 @@
             android:focusable="true"
             android:src="@drawable/upload_file"
             android:tint="#fff"
-            app:borderWidth="0dp"
+            app:borderWidth="5dp"
             app:fabCustomSize="150dp"
             app:maxImageSize="@dimen/fab_content_size" />
 

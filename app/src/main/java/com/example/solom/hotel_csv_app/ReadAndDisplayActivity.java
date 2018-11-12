@@ -4,14 +4,12 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Telephony;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -19,9 +17,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.solom.hotel_csv_app.adapter.CsvAdapter;
@@ -180,28 +180,37 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
 
     private void displayDetailsDialog(final int pos) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setView();
-        builder.setTitle(data.get(pos).getMessage());
-        builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+        View view = LayoutInflater.from(this).inflate(R.layout.items_detials_dialog, null);
+
+        TextView phoneTv = view.findViewById(R.id.details_phone_num);
+        TextView msgTv = view.findViewById(R.id.details_message);
+        phoneTv.setText(data.get(pos).getPhone());
+        msgTv.setText(data.get(pos).getMessage());
+        builder.setView(view);
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+
+        view.findViewById(R.id.details_send_btn).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(View v) {
                 sendSingleSMS(pos);
-            }
-        });
-        builder.setNeutralButton("Schedule", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(ReadAndDisplayActivity.this, "Coming Soon...", Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        view.findViewById(R.id.details_schedule_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(ReadAndDisplayActivity.this, "Coming Soon...", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+
+            }
+        });
+        view.findViewById(R.id.details_cancel_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
     }
 
     private class SmsResultReceiver extends BroadcastReceiver {
