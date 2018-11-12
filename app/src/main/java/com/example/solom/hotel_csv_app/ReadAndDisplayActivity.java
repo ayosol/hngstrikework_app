@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Telephony;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -92,7 +93,6 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             actionBar.setTitle(title);
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
-
         }
     }
 

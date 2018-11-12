@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +15,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.solom.hotel_csv_app.utils.PathUtil;
@@ -31,16 +31,16 @@ public class MainActivity extends AppCompatActivity {
     public static final int SMS_PERMISSION_CODE = 102;
     private static final String TAG = "PERMISSION";
     private static final int CSV_UPLOAD_REQUEST_CODE = 107;
-    @BindView(R.id.readcsvfile)
-    Button readCsvFile;
-    public static final String EXTRAS_CSV_FILE_NAME="MainActivity.filePath";
+    @BindView(R.id.upload_fab)
+    FloatingActionButton readCsvFile;
+
+    public static final String EXTRAS_CSV_FILE_NAME = "MainActivity.filePath";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
         readCsvFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,9 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        if (checkPermission(Manifest.permission.SEND_SMS, SMS_PERMISSION_CODE)) {
-            //Send SMS
-        }
+        // checkPermission(Manifest.permission.SEND_SMS, SMS_PERMISSION_CODE);
     }
 
 
@@ -74,10 +72,11 @@ public class MainActivity extends AppCompatActivity {
                         assert PathHolder != null;
                         String csvFileNname = PathHolder.substring(PathHolder.lastIndexOf('/') + 1);
                         Toast.makeText(getApplicationContext(), csvFileNname, Toast.LENGTH_LONG).show();
-                        Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
+                        final Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
                         readAndDisplayIntent.putExtra(EXTRAS_CSV_PATH_NAME, PathHolder);
                         readAndDisplayIntent.putExtra(EXTRAS_CSV_FILE_NAME, csvFileNname);
                         startActivity(readAndDisplayIntent);
+
                     } else {
                         Toast.makeText(getApplicationContext(), "File is not a csv", Toast.LENGTH_SHORT).show();
                     }
