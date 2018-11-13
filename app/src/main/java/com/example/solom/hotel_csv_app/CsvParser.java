@@ -1,7 +1,6 @@
 package com.example.solom.hotel_csv_app;
 
-import android.content.Context;
-
+import com.example.solom.hotel_csv_app.models.DataCsv;
 import com.opencsv.CSVReader;
 
 import java.io.FileReader;
@@ -24,7 +23,7 @@ public class CsvParser {
         try {
             reader = new CSVReader(new FileReader(csv_path));
             while ((nextLine = reader.readNext()) != null) {
-                data.add(new DataCsv("0" + nextLine[0], nextLine[1]));
+                data.add(new DataCsv(nextLine[0], nextLine[1]));
             }
         } catch (IOException e) {
             e.printStackTrace();
