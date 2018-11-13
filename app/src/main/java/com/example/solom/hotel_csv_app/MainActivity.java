@@ -126,6 +126,18 @@ public class MainActivity extends AppCompatActivity {
                 recentFilesRv.setHasFixedSize(true);
                 recentFilesRv.setLayoutManager(new LinearLayoutManager(this));
                 RecentlyOpenedRvAdapter adapter = new RecentlyOpenedRvAdapter(recentFiles, this);
+                RecentlyOpenedRvAdapter.OnItemClickListener onItemClickListener = new RecentlyOpenedRvAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int adapterPosition) {
+                        final Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
+                        String path = recentFiles.get(adapterPosition).getmPath();
+                        String csvFileName = path.substring(path.lastIndexOf('/') + 1);
+                        readAndDisplayIntent.putExtra(EXTRAS_CSV_PATH_NAME, path);
+                        readAndDisplayIntent.putExtra(EXTRAS_CSV_FILE_NAME, csvFileName);
+                        startActivity(readAndDisplayIntent);
+                    }
+                };
+                adapter.setOnItemClickListener(onItemClickListener);
                 recentFilesRv.setAdapter(adapter);
 
             } else {

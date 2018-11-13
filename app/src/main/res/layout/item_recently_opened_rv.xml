@@ -26,6 +26,14 @@
         android:layout_marginTop="8dp"
         android:text="12/11/2018" />
 
+    <TextView
+        android:id="@+id/recently_opened_rv_item_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/recently_opened_rv_item_date"
+        android:layout_marginStart="24dp"
+        android:text="12/11/2018" />
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"

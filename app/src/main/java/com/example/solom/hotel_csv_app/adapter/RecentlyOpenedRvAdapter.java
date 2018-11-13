@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.example.solom.hotel_csv_app.R;
@@ -18,11 +17,15 @@ public class RecentlyOpenedRvAdapter extends RecyclerView.Adapter<RecentlyOpened
 
     private List<RecentlyOpened> mFileList;
     private Context context;
-    private AdapterView.OnItemClickListener onItemClickListener;
+    private OnItemClickListener onItemClickListener;
 
     public RecentlyOpenedRvAdapter(List<RecentlyOpened> fileList, Context context) {
         this.mFileList = fileList;
         this.context = context;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener clickListener) {
+        onItemClickListener = clickListener;
     }
 
     @NonNull
@@ -55,5 +58,10 @@ public class RecentlyOpenedRvAdapter extends RecyclerView.Adapter<RecentlyOpened
             mDate_tv = itemView.findViewById(R.id.recently_opened_rv_item_date);
 
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View view,
+                         int adapterPosition);
     }
 }
