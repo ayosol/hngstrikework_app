@@ -30,6 +30,12 @@
     <string name="pref_show_estimate">pref_show_estimate</string>
     <string name="clickAndUpload">click the button below to upload a csv and get started</string>
     <string name="uploadImageName">clickAndUploadImage</string>
+    <string name="sms_action_sent_Activity.RESULT_OK">Activity.RESULT_OK</string>
+    <string name="sms_action_sent_SmsManager.RESULT_ERROR_GENERIC_FAILURE">SmsManager.RESULT_ERROR_GENERIC_FAILURE</string>
+    <string name="sms_action_sent_SmsManager.RESULT_ERROR_RADIO_OFF">SmsManager.RESULT_ERROR_RADIO_OFF</string>
+    <string name="sms_action_sent_SmsManager.RESULT_ERROR_NULL_PDU">SmsManager.RESULT_ERROR_NULL_PDU</string>
+    <string name="sms_action_sent_SmsManager.RESULT_ERROR_NO_SERVICE">SmsManager.RESULT_ERROR_NO_SERVICE</string>
+    <string name="unknown_error_code">Unknown error code</string>
 
     <string-array name="pref_max_recent_values">
         <item>1</item>

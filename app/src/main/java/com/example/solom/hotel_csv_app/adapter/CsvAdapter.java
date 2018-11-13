@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.solom.hotel_csv_app.DataCsv;
+import com.example.solom.hotel_csv_app.models.DataCsv;
 import com.example.solom.hotel_csv_app.R;
 
 import java.util.List;
