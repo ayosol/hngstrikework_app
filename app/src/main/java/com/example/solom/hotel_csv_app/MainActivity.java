@@ -15,6 +15,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.solom.hotel_csv_app.adapter.RecentlyOpenedRvAdapter;
+import com.example.solom.hotel_csv_app.models.RecentlyOpened;
 import com.example.solom.hotel_csv_app.utils.PathUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -46,10 +48,8 @@ public class MainActivity extends AppCompatActivity {
     public static String EXTRAS_CSV_PATH_NAME = "com.example.solom.hotel_csv_app.MainActivity.PathHolder";
     public static String PREFS_CSV_PATH_NAMES = "com.example.solom.hotel_csv_app.MainActivity.PathHolder";
     public static String SHARED_PREFERENCE_NAME = "com.example.solom.hotel_csv_app.MainActivity.SharedPrefs";
-    public static final int SMS_PERMISSION_CODE = 102;
     private static final String TAG = "PERMISSION";
     private String appFolder;
-    private SharedPreferences defaultPrefs;
     private SharedPreferences sharedPrefs;
     private SharedPreferences.Editor prefsEditor;
     private ArrayList<RecentlyOpened> recentFiles;
@@ -75,9 +75,9 @@ public class MainActivity extends AppCompatActivity {
         sharedPrefs = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE);
 
         //Reading the show recent files preference from settings
-        defaultPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         showRecentFiles = defaultPrefs.getBoolean(this.getString(R.string.pref_show_recent), false);
-        max_recent_files = Integer.parseInt(defaultPrefs.getString(this.getString(R.string.max_recent_files), "3"));
+        max_recent_files = Integer.parseInt(defaultPrefs.getString(this.getString(R.string.pref_max_recent_files), "5"));
 
         if (showRecentFiles) {
             readAndDisplayRecentFiles();
@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-        // checkPermission(Manifest.permission.SEND_SMS, SMS_PERMISSION_CODE);
     }
 
     private void readAndDisplayRecentFiles() {
@@ -124,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
                 RecyclerView recentFilesRv = findViewById(R.id.recently_opened_rv);
                 RecentlyOpenedRvAdapter adapter = new RecentlyOpenedRvAdapter(recentFiles, this);
-
+                recentFilesRv.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
                 recentFilesRv.setHasFixedSize(true);
                 recentFilesRv.setLayoutManager(new LinearLayoutManager(this));
 
@@ -164,6 +163,8 @@ public class MainActivity extends AppCompatActivity {
         Date date = new Date();
         @SuppressLint("SimpleDateFormat")
         String fileDate = new SimpleDateFormat("dd/MM/yyyy").format(date);
+        String fileTime = new SimpleDateFormat("HH:mm Z").format(date);
+
         @SuppressLint("SimpleDateFormat")
         String filePrefix = new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
         String pathToStoreRecent = appFolder + "/" + filePrefix + fileName;
@@ -177,11 +178,12 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(EXTRAS_CSV_FILE_NAME, recentFiles.get(0).getmPath() + " is NOT deleted");
             }
 
+            //Removes the deleted file from the recentFiles Arraylist
             recentFiles.remove(0);
 
-            recentFiles.add(new RecentlyOpened(pathToStoreRecent, fileDate));
+            recentFiles.add(new RecentlyOpened(pathToStoreRecent, fileDate, fileTime));
         } else {
-            recentFiles.add(new RecentlyOpened(pathToStoreRecent, fileDate));
+            recentFiles.add(new RecentlyOpened(pathToStoreRecent, fileDate, fileTime));
         }
         //TODO: Save the array to Shared Preference
         prefsEditor = sharedPrefs.edit();
