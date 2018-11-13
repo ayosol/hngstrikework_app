@@ -123,13 +123,16 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.main_layout).setVisibility(View.GONE);
 
                 RecyclerView recentFilesRv = findViewById(R.id.recently_opened_rv);
+                RecentlyOpenedRvAdapter adapter = new RecentlyOpenedRvAdapter(recentFiles, this);
+
                 recentFilesRv.setHasFixedSize(true);
                 recentFilesRv.setLayoutManager(new LinearLayoutManager(this));
-                RecentlyOpenedRvAdapter adapter = new RecentlyOpenedRvAdapter(recentFiles, this);
+
                 RecentlyOpenedRvAdapter.OnItemClickListener onItemClickListener = new RecentlyOpenedRvAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int adapterPosition) {
-                        final Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
+                        Toast.makeText(MainActivity.this, "Clicked " + adapterPosition, Toast.LENGTH_SHORT).show();
+                        Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
                         String path = recentFiles.get(adapterPosition).getmPath();
                         String csvFileName = path.substring(path.lastIndexOf('/') + 1);
                         readAndDisplayIntent.putExtra(EXTRAS_CSV_PATH_NAME, path);

@@ -56,6 +56,12 @@ public class RecentlyOpenedRvAdapter extends RecyclerView.Adapter<RecentlyOpened
             super(itemView);
             mTitle_tv = itemView.findViewById(R.id.recently_opened_rv_item_title);
             mDate_tv = itemView.findViewById(R.id.recently_opened_rv_item_date);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onItemClickListener.onItemClick(view, getAdapterPosition());
+                }
+            });
 
         }
     }
