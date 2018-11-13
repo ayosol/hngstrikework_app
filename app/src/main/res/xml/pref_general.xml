@@ -10,7 +10,7 @@
          dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
     <ListPreference
-        android:defaultValue="1"
+        android:defaultValue="3"
         android:enabled="false"
         android:entries="@array/pref_max_recent_values"
         android:entryValues="@array/pref_max_recent_values"

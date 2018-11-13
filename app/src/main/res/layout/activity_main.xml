@@ -11,7 +11,8 @@
     <RelativeLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="visible">
 
         <TextView
             android:layout_width="wrap_content"
@@ -54,17 +55,38 @@
         android:id="@+id/recently_opened_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:visibility="gone">
+
+        <TextView
+            android:id="@+id/label_recently_open"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:minHeight="45dp"
+            android:text="Recently Opened CSV"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recently_opened_rv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_below="@id/label_recently_open" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/upload_fab_2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="51dp"
+            android:layout_marginEnd="47dp"
+            android:src="@drawable/upload_file"
+            android:tint="@color/white" />
     </RelativeLayout>
 </RelativeLayout><!--
 //=======

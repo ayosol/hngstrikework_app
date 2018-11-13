@@ -10,7 +10,6 @@ import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +31,9 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
         PreferenceScreen prefScreen = getPreferenceScreen();
         int count = prefScreen.getPreferenceCount();
-
+        if (sharedPreferences.getBoolean(this.getString(R.string.pref_show_recent), false)) {
+            findPreference(maxRecentKey).setEnabled(true);
+        }
         for (int i = 0; i < count; i++) {
             Preference pref = prefScreen.getPreference(i);
             if (!(pref instanceof SwitchPreference) && !(pref instanceof CheckBoxPreference)) {
@@ -73,9 +74,9 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
                 String value = sharedPreferences.getString(pref.getKey(), "");
                 setPreferenceSummary(pref, value);
             }
-            if (key.equals(maxRecentKey)) {
+            if (key.equals(this.getString(R.string.pref_show_recent))) {
 
-                if (sharedPreferences.getBoolean(key, false)) {
+                if (sharedPreferences.getBoolean(this.getString(R.string.pref_show_recent), false)) {
                     findPreference(maxRecentKey).setEnabled(true);
                     Toast.makeText(SettingsActivity.this, "enabled", Toast.LENGTH_SHORT).show();
                 } else {
