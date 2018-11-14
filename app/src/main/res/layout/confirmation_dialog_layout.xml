@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/colorPrimary"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/dialog_confirm_icon_alt" />
+
+    <TextView
+        android:id="@+id/confirmationdialogk_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sending Complete"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FAFAFA" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/confirmation_successful_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:drawableEnd="@drawable/ic_done_all_black_24dp"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/colorAccent"
+            android:text="4 Successful"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/confirmation_failed_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_info_black_24dp"
+            android:drawablePadding="10dp"
+            android:drawableTint="#B71C1C"
+            android:text="2 Failed"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/confirmation_dialog_ok_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Done"
+        android:textColor="#03A9F4"
+        android:visibility="visible" />
+
+</LinearLayout>

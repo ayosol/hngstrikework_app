@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +42,8 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "message";
     private static final String PERMISSION_TAG = "PERMISSION";
     public static final int SMS_PERMISSION_CODE = 102;
-
+    private final int DIALOG_TYPE_LOADING = 1;
+    private final int DIALOG_TYPE_CONFIRMATION = 2;
 
     private IntentFilter intentFilter;
     private BroadcastReceiver resultsReceiver;
@@ -56,6 +58,8 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
 
     private int smsSendingindex = 0;
     private int smsToSendSize = 0;
+    private TextView loadingProgressTv;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +100,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dataCopy = (ArrayList<DataCsv>) data.clone();
                 smsToSendSize = dataCopy.size();
+                displayDialog(DIALOG_TYPE_LOADING);
                 sendNextSMS();
             }
         });
@@ -120,6 +125,40 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         unregisterReceiver(resultsReceiver);
+    }
+
+    public void displayDialog(int type) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view;
+        switch (type) {
+            case DIALOG_TYPE_LOADING:
+                view = LayoutInflater.from(this).inflate(R.layout.loading_dialog_layout, null);
+                loadingProgressTv = view.findViewById(R.id.loading_dialog_progress);
+                builder.setView(view);
+                builder.setCancelable(false);
+                break;
+            case DIALOG_TYPE_CONFIRMATION:
+                view = LayoutInflater.from(this).inflate(R.layout.confirmation_dialog_layout, null);
+                Button okBtn = view.findViewById(R.id.confirmation_dialog_ok_btn);
+                TextView successfulSmsTv = view.findViewById(R.id.confirmation_successful_txt);
+                TextView failedSmsTv = view.findViewById(R.id.confirmation_failed_txt);
+                int sent = smsToSendSize - failedSMS.size();
+                successfulSmsTv.setText("" + sent + "Sent");
+                failedSmsTv.setText("" + failedSMS.size() + "Failed");
+                okBtn.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View p1) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.setView(view);
+                builder.setCancelable(false);
+                break;
+        }
+        dialog = builder
+                .create();
+        dialog.show();
     }
 
     private void displayDetailsDialog(final int pos) {
@@ -162,6 +201,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         if (checkPermission(Manifest.permission.SEND_SMS, SMS_PERMISSION_CODE)) {
 
             //TODO:	Display Loading Dialog
+            displayDialog(DIALOG_TYPE_LOADING);
             if (!dataCopy.isEmpty()) dataCopy.clear();
             dataCopy = selectedData;
             smsToSendSize = dataCopy.size();
@@ -172,8 +212,10 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     private void sendSingleSMS(int pos) {
         if (checkPermission(Manifest.permission.SEND_SMS, SMS_PERMISSION_CODE)) {
             //TODO:Display Loading Dialog
+            displayDialog(DIALOG_TYPE_LOADING);
             dataCopy.clear();
             dataCopy.add(data.get(pos));
+            smsToSendSize = dataCopy.size();
             sendNextSMS();
             Toast.makeText(ReadAndDisplayActivity.this, "SMS sent!", Toast.LENGTH_SHORT).show();
         }
@@ -186,9 +228,11 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             // We're going to remove numbers and messages from
             // the lists as we send, so if the lists are empty, we're done.
             if (dataCopy.size() == 0) {
+                //TODO:Display Confirmation Dialog
+                dialog.dismiss();
+                displayDialog(DIALOG_TYPE_CONFIRMATION);
                 smsSendingindex = 0;
                 smsToSendSize = 0;
-                //TODO:Display Confirmation Dialog
                 return;
             }
 
@@ -228,7 +272,8 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             smsManager.sendTextMessage(number, null, message, sentPI, deliveredPI);
 
             smsSendingindex++;
-            Toast.makeText(this, "Sending... " + smsSendingindex + "/" + smsToSendSize, Toast.LENGTH_SHORT).show();
+            loadingProgressTv.setText(String.format("%d/%d", smsSendingindex, smsToSendSize));
+            //Toast.makeText(this, "Sending... " + smsSendingindex + "/" + smsToSendSize, Toast.LENGTH_SHORT).show();
 
             // Remove the number and message we just sent to from the lists.
             dataCopy.remove(0);
@@ -342,7 +387,8 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.v(PERMISSION_TAG, "Permission: " + permissions[0] + "was " + grantResults[0]);

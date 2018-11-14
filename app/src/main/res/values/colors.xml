@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#21C65A</color>
     <color name="white">#fff</color>
+    <color name="dialog_blue">#03A9F4</color>
 </resources>
