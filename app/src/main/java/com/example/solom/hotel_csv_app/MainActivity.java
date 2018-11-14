@@ -137,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 RecentlyOpenedRvAdapter.OnItemClickListener onItemClickListener = new RecentlyOpenedRvAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int adapterPosition) {
-                        Toast.makeText(MainActivity.this, "Clicked " + adapterPosition, Toast.LENGTH_SHORT).show();
                         Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
                         String path = recentFiles.get(adapterPosition).getmPath();
                         String csvFileName = path.substring(path.lastIndexOf('/') + 1);
@@ -151,9 +150,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     public void onItemLongClick(View view, int adapterPosition) {
                         boolean isDeleted = deleteRecentFile(adapterPosition);
                         if (isDeleted) {
-                            Toast.makeText(MainActivity.this, "File Deleted Successfully " + adapterPosition, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "File Deleted Successfully ", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(MainActivity.this, "File Not Deleted..." + adapterPosition, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "File Not Deleted...", Toast.LENGTH_SHORT).show();
                         }
                         adapter.notifyDataSetChanged();
                     }
@@ -165,7 +164,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             } else {
                 findViewById(R.id.recently_opened_layout).setVisibility(View.GONE);
                 findViewById(R.id.main_layout).setVisibility(View.VISIBLE);
-                Toast.makeText(this, "Recent Files is empty", Toast.LENGTH_SHORT).show();
             }
         } else {
             prefsEditor = sharedPrefs.edit();
@@ -176,9 +174,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     public boolean deleteRecentFile(int pos) {
         File file = new File(recentFiles.get(pos).getmPath());
-
+        recentFiles.remove(pos);
         //Removes the deleted file from the recentFiles Arraylist
-        if (file.delete()) recentFiles.remove(pos);
+        //if (file.delete())
         return file.delete();
     }
 
@@ -196,7 +194,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         @SuppressLint("SimpleDateFormat")
         String filePrefix = new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
         String pathToStoreRecent = appFolder + "/" + filePrefix + fileName;
-        copyFile(filePath, pathToStoreRecent);
+        try {
+            copyFile(filePath, pathToStoreRecent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (recentFiles.size() == max_recent_files) {
             boolean isDeleted = deleteRecentFile(0);
             if (isDeleted) {
@@ -258,13 +260,18 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
-    private void copyFile(String from, String to) {
+    private void copyFile(String from, String to) throws IOException {
         File source = new File(from);
         File destination = new File(to);
-        try {
+        //Delete File if it already exist
+        for (int i = 0; i < recentFiles.size(); i++) {
+            if (FileUtils.contentEquals(source, new File(recentFiles.get(i).getmPath()))) {
+                deleteRecentFile(i);
+            }
+        }
+
+        if (!FileUtils.contentEquals(source, destination)) {
             FileUtils.copyFile(source, destination);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
