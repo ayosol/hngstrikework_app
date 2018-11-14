@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -31,6 +32,8 @@ import android.widget.Toast;
 import com.example.solom.hotel_csv_app.adapter.RecentlyOpenedRvAdapter;
 import com.example.solom.hotel_csv_app.models.RecentlyOpened;
 import com.example.solom.hotel_csv_app.utils.PathUtil;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -78,7 +81,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         gson = new Gson();
         recentFiles = new ArrayList<>();
         sharedPrefs = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE);
-
+        boolean isFirstLaunch = sharedPrefs.getBoolean("IS_FIRST_LAUNCH", true);
+        if (isFirstLaunch)
+            showTapTarget(R.id.upload_fab, "Get Started!", "Click this button to upload a .csv file");
         //Reading the show recent files preference from settings
         SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         showRecentFiles = defaultPrefs.getBoolean(this.getString(R.string.pref_show_recent), false);
@@ -359,4 +364,43 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    private void showTapTarget(int id, String title, String description) {
+        final SpannableString desc = new SpannableString(description);
+
+        TapTargetView.showFor(this, TapTarget.forView(findViewById(id), title, desc)
+                .cancelable(false)
+                .drawShadow(true)
+                .tintTarget(false)
+                .dimColor(android.R.color.black)
+                .outerCircleColor(R.color.dialog_blue)
+                .targetCircleColor(android.R.color.white)
+                .transparentTarget(true), new TapTargetView.Listener() {
+            @Override
+            public void onTargetClick(TapTargetView view) {
+                super.onTargetClick(view);
+                view.dismiss(true);
+                if (checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, CSV_UPLOAD_REQUEST_CODE)) {
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("*/*");
+                    startActivityForResult(intent, CSV_UPLOAD_REQUEST_CODE);
+                }
+            }
+
+            @Override
+            public void onOuterCircleClick(TapTargetView view) {
+                super.onOuterCircleClick(view);
+                Toast.makeText(view.getContext(), "Click the glowing button", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
+                Log.d("TapTargetViewSample", "You dismissed me :(");
+            }
+        });
+
+    }
+
+
 }

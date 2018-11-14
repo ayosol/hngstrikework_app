@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,6 +34,8 @@ import android.widget.Toast;
 
 import com.example.solom.hotel_csv_app.adapter.CsvAdapter;
 import com.example.solom.hotel_csv_app.models.DataCsv;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
 
 import java.util.ArrayList;
 
@@ -65,6 +69,13 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_and_display);
+        SharedPreferences sharedPref = getSharedPreferences(MainActivity.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+
+        boolean isFirstLaunch = sharedPref.getBoolean("IS_FIRST_LAUNCH", true);
+        if (isFirstLaunch) {
+            showTapTarget(R.id.send_fab, "Send SMS", "Use this button to send SMS to all numbers in the CSV file");
+            sharedPref.edit().putBoolean("IS_FIRST_LAUNCH", false).apply();
+        }
         Bundle extras = getIntent().getExtras();
         assert extras != null;
         String csvPath = extras.getString(MainActivity.EXTRAS_CSV_PATH_NAME);
@@ -413,5 +424,34 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showTapTarget(int id, String title, String description) {
+        final SpannableString desc = new SpannableString(description);
+
+        TapTargetView.showFor(this, TapTarget.forView(findViewById(id), title, desc)
+                .cancelable(true)
+                .drawShadow(true)
+                .tintTarget(false)
+                .dimColor(android.R.color.black)
+                .outerCircleColor(R.color.dialog_blue)
+                .targetCircleColor(android.R.color.white)
+                .transparentTarget(true), new TapTargetView.Listener() {
+            @Override
+            public void onTargetClick(TapTargetView view) {
+                super.onTargetClick(view);
+                view.dismiss(true);
+            }
+
+            @Override
+            public void onOuterCircleClick(TapTargetView view) {
+                super.onOuterCircleClick(view);
+            }
+
+            @Override
+            public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
+                Log.d("TapTargetViewSample", "You dismissed me :(");
+            }
+        });
     }
 }
