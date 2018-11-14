@@ -68,7 +68,7 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="0.3"
+                android:layout_weight="0.2"
                 app:cardBackgroundColor="@color/colorPrimary"
                 app:cardElevation="5dp">
 

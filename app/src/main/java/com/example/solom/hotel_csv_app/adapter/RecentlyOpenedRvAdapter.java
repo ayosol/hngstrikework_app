@@ -43,7 +43,7 @@ public class RecentlyOpenedRvAdapter extends RecyclerView.Adapter<RecentlyOpened
     @Override
     public void onBindViewHolder(@NonNull FileHolder fileHolder, int i) {
         RecentlyOpened recentFiles = mFileList.get(i);
-        fileHolder.mTitle_tv.setText(recentFiles.getmPath().substring(mFileList.get(i).getmPath().lastIndexOf("/")));
+        fileHolder.mTitle_tv.setText(recentFiles.getmPath().substring(mFileList.get(i).getmPath().lastIndexOf("/") + 1));
         fileHolder.mDate_tv.setText(recentFiles.getmDate());
         fileHolder.mTime_tv.setText(recentFiles.getmTime());
     }

@@ -55,7 +55,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     private ArrayList<DataCsv> failedSMS = new ArrayList<>();
 
     private int smsSendingindex = 0;
-
+    private int smsToSendSize = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +95,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dataCopy = (ArrayList<DataCsv>) data.clone();
+                smsToSendSize = dataCopy.size();
                 sendNextSMS();
             }
         });
@@ -163,6 +164,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             //TODO:	Display Loading Dialog
             if (!dataCopy.isEmpty()) dataCopy.clear();
             dataCopy = selectedData;
+            smsToSendSize = dataCopy.size();
             sendNextSMS();
         }
     }
@@ -173,7 +175,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             dataCopy.clear();
             dataCopy.add(data.get(pos));
             sendNextSMS();
-            Toast.makeText(ReadAndDisplayActivity.this, "SMS sent", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ReadAndDisplayActivity.this, "SMS sent!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -185,7 +187,8 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             // the lists as we send, so if the lists are empty, we're done.
             if (dataCopy.size() == 0) {
                 smsSendingindex = 0;
-                //TODO:Dssplay Confirmation Dialog
+                smsToSendSize = 0;
+                //TODO:Display Confirmation Dialog
                 return;
             }
 
@@ -225,7 +228,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             smsManager.sendTextMessage(number, null, message, sentPI, deliveredPI);
 
             smsSendingindex++;
-            Toast.makeText(this, "Sending... " + smsSendingindex + "/" + data.size(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Sending... " + smsSendingindex + "/" + smsToSendSize, Toast.LENGTH_SHORT).show();
 
             // Remove the number and message we just sent to from the lists.
             dataCopy.remove(0);
