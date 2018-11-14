@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                         TextView dialogView = new TextView(MainActivity.this);
                         dialogView.setText(fileName);
                         dialogView.setTextSize(18);
-                        dialogView.setPadding(16,16,16,16);
+                        dialogView.setPadding(16, 16, 16, 16);
                         dialogView.setGravity(Gravity.CENTER);
                         new AlertDialog.Builder(MainActivity.this)
                                 .setTitle(txt).setView(dialogView).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -165,6 +165,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                             public void onClick(DialogInterface dialog, int which) {
                                 deleteRecentFile(adapterPosition);
                                 adapter.notifyDataSetChanged();
+                                if (recentFiles.isEmpty()) {
+                                    findViewById(R.id.recently_opened_layout).setVisibility(View.GONE);
+                                    findViewById(R.id.main_layout).setVisibility(View.VISIBLE);
+                                }
                             }
                         }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
