@@ -170,6 +170,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                             public void onClick(DialogInterface dialog, int which) {
                                 deleteRecentFile(adapterPosition);
                                 adapter.notifyDataSetChanged();
+                                if (recentFiles.isEmpty()) {
+                                    findViewById(R.id.recently_opened_layout).setVisibility(View.GONE);
+                                    findViewById(R.id.main_layout).setVisibility(View.VISIBLE);
+                                }
                             }
                         }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
