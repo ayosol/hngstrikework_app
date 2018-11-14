@@ -174,9 +174,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     public boolean deleteRecentFile(int pos) {
         File file = new File(recentFiles.get(pos).getmPath());
-        recentFiles.remove(pos);
-        //Removes the deleted file from the recentFiles Arraylist
-        //if (file.delete())
+
+        if (file.delete()) {
+            recentFiles.remove(pos);
+            prefsEditor = sharedPrefs.edit();
+            prefsEditor.putString(PREFS_CSV_PATH_NAMES, gson.toJson(recentFiles));
+            prefsEditor.apply();
+        }
         return file.delete();
     }
 
