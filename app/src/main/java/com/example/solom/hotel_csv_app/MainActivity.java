@@ -44,7 +44,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static String EXTRAS_CSV_PATH_NAME = "com.example.solom.hotel_csv_app.MainActivity.PathHolder";
     public static String PREFS_CSV_PATH_NAMES = "com.example.solom.hotel_csv_app.MainActivity.PathHolder";
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         showRecentFiles = defaultPrefs.getBoolean(this.getString(R.string.pref_show_recent), false);
         max_recent_files = Integer.parseInt(defaultPrefs.getString(this.getString(R.string.pref_max_recent_files), "5"));
-
+        defaultPrefs.registerOnSharedPreferenceChangeListener(this);
         if (showRecentFiles) {
             readAndDisplayRecentFiles();
         }
@@ -108,6 +108,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (showRecentFiles) readAndDisplayRecentFiles();
     }
 
     private void readAndDisplayRecentFiles() {
@@ -210,6 +216,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(this.getString(R.string.pref_show_recent))) {
+            showRecentFiles = sharedPreferences.getBoolean(this.getString(R.string.pref_show_recent), false);
+            if (showRecentFiles) readAndDisplayRecentFiles();
+        } else if (key.equals(this.getString(R.string.pref_max_recent_files))) {
+            max_recent_files = Integer.parseInt(sharedPreferences.getString(this.getString(R.string.pref_max_recent_files), "5"));
+        }
+    }
+
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case CSV_UPLOAD_REQUEST_CODE:
@@ -280,6 +297,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, CSV_UPLOAD_REQUEST_CODE);
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
