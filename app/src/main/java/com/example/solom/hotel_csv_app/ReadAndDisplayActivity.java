@@ -74,7 +74,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         boolean isFirstLaunch = sharedPref.getBoolean("IS_FIRST_LAUNCH", true);
         if (isFirstLaunch) {
             showTapTarget(R.id.send_fab, "Send SMS", "Use this button to send SMS to all numbers in the CSV file");
-            sharedPref.edit().putBoolean("IS_FIRST_TIME_LAUNCH", false).apply();
+            sharedPref.edit().putBoolean("IS_FIRST_LAUNCH", false).apply();
         }
         Bundle extras = getIntent().getExtras();
         assert extras != null;
