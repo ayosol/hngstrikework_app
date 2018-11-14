@@ -18,6 +18,7 @@ public class RecentlyOpenedRvAdapter extends RecyclerView.Adapter<RecentlyOpened
     private List<RecentlyOpened> mFileList;
     private Context context;
     private OnItemClickListener onItemClickListener;
+    private OnItemLongClickListener onItemLongClickListener;
 
     public RecentlyOpenedRvAdapter(List<RecentlyOpened> fileList, Context context) {
         this.mFileList = fileList;
@@ -26,6 +27,10 @@ public class RecentlyOpenedRvAdapter extends RecyclerView.Adapter<RecentlyOpened
 
     public void setOnItemClickListener(OnItemClickListener clickListener) {
         onItemClickListener = clickListener;
+    }
+
+    public void setOnLongClickListener(OnItemLongClickListener longClickListener) {
+        onItemLongClickListener = longClickListener;
     }
 
     @NonNull
@@ -38,7 +43,7 @@ public class RecentlyOpenedRvAdapter extends RecyclerView.Adapter<RecentlyOpened
     @Override
     public void onBindViewHolder(@NonNull FileHolder fileHolder, int i) {
         RecentlyOpened recentFiles = mFileList.get(i);
-        fileHolder.mTitle_tv.setText(recentFiles.getmPath().substring(mFileList.get(i).getmPath().lastIndexOf("/")));
+        fileHolder.mTitle_tv.setText(recentFiles.getmPath().substring(mFileList.get(i).getmPath().lastIndexOf("/") + 1));
         fileHolder.mDate_tv.setText(recentFiles.getmDate());
         fileHolder.mTime_tv.setText(recentFiles.getmTime());
     }
@@ -65,6 +70,13 @@ public class RecentlyOpenedRvAdapter extends RecyclerView.Adapter<RecentlyOpened
                     onItemClickListener.onItemClick(view, getAdapterPosition());
                 }
             });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    onItemLongClickListener.onItemLongClick(v, getAdapterPosition());
+                    return false;
+                }
+            });
 
         }
     }
@@ -72,5 +84,10 @@ public class RecentlyOpenedRvAdapter extends RecyclerView.Adapter<RecentlyOpened
     public interface OnItemClickListener {
         void onItemClick(View view,
                          int adapterPosition);
+    }
+
+    public interface OnItemLongClickListener {
+        void onItemLongClick(View view,
+                             int adapterPosition);
     }
 }

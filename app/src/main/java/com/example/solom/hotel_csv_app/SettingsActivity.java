@@ -14,7 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 public class SettingsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     String maxRecentKey;
@@ -78,10 +77,8 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
 
                 if (sharedPreferences.getBoolean(this.getString(R.string.pref_show_recent), false)) {
                     findPreference(maxRecentKey).setEnabled(true);
-                    Toast.makeText(SettingsActivity.this, "enabled", Toast.LENGTH_SHORT).show();
                 } else {
                     findPreference(maxRecentKey).setEnabled(false);
-                    Toast.makeText(SettingsActivity.this, "disabled", Toast.LENGTH_SHORT).show();
                 }
             }
         }

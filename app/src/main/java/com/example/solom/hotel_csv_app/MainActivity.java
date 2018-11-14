@@ -35,6 +35,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,7 +44,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static String EXTRAS_CSV_PATH_NAME = "com.example.solom.hotel_csv_app.MainActivity.PathHolder";
     public static String PREFS_CSV_PATH_NAMES = "com.example.solom.hotel_csv_app.MainActivity.PathHolder";
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         showRecentFiles = defaultPrefs.getBoolean(this.getString(R.string.pref_show_recent), false);
         max_recent_files = Integer.parseInt(defaultPrefs.getString(this.getString(R.string.pref_max_recent_files), "5"));
-
+        defaultPrefs.registerOnSharedPreferenceChangeListener(this);
         if (showRecentFiles) {
             readAndDisplayRecentFiles();
         }
@@ -109,6 +110,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (showRecentFiles) readAndDisplayRecentFiles();
+    }
+
     private void readAndDisplayRecentFiles() {
         //TODO: Check if there are any saved recently opened file
         //TODO: Hide or Display Recently Saved RecyclerView
@@ -122,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.main_layout).setVisibility(View.GONE);
 
                 RecyclerView recentFilesRv = findViewById(R.id.recently_opened_rv);
-                RecentlyOpenedRvAdapter adapter = new RecentlyOpenedRvAdapter(recentFiles, this);
+                final RecentlyOpenedRvAdapter adapter = new RecentlyOpenedRvAdapter(recentFiles, this);
                 recentFilesRv.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
                 recentFilesRv.setHasFixedSize(true);
                 recentFilesRv.setLayoutManager(new LinearLayoutManager(this));
@@ -130,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
                 RecentlyOpenedRvAdapter.OnItemClickListener onItemClickListener = new RecentlyOpenedRvAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int adapterPosition) {
-                        Toast.makeText(MainActivity.this, "Clicked " + adapterPosition, Toast.LENGTH_SHORT).show();
                         Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
                         String path = recentFiles.get(adapterPosition).getmPath();
                         String csvFileName = path.substring(path.lastIndexOf('/') + 1);
@@ -139,19 +145,43 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(readAndDisplayIntent);
                     }
                 };
+                RecentlyOpenedRvAdapter.OnItemLongClickListener onItemLongClickListener = new RecentlyOpenedRvAdapter.OnItemLongClickListener() {
+                    @Override
+                    public void onItemLongClick(View view, int adapterPosition) {
+                        boolean isDeleted = deleteRecentFile(adapterPosition);
+                        if (isDeleted) {
+                            Toast.makeText(MainActivity.this, "File Deleted Successfully ", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "File Not Deleted...", Toast.LENGTH_SHORT).show();
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                };
                 adapter.setOnItemClickListener(onItemClickListener);
+                adapter.setOnLongClickListener(onItemLongClickListener);
                 recentFilesRv.setAdapter(adapter);
 
             } else {
                 findViewById(R.id.recently_opened_layout).setVisibility(View.GONE);
                 findViewById(R.id.main_layout).setVisibility(View.VISIBLE);
-                Toast.makeText(this, "Recent Files is empty", Toast.LENGTH_SHORT).show();
             }
         } else {
             prefsEditor = sharedPrefs.edit();
             prefsEditor.putString(PREFS_CSV_PATH_NAMES, gson.toJson(recentFiles));
             prefsEditor.apply();
         }
+    }
+
+    public boolean deleteRecentFile(int pos) {
+        File file = new File(recentFiles.get(pos).getmPath());
+
+        if (file.delete()) {
+            recentFiles.remove(pos);
+            prefsEditor = sharedPrefs.edit();
+            prefsEditor.putString(PREFS_CSV_PATH_NAMES, gson.toJson(recentFiles));
+            prefsEditor.apply();
+        }
+        return file.delete();
     }
 
     private void saveRecentFiles(String filePath, String fileName) {
@@ -163,23 +193,23 @@ public class MainActivity extends AppCompatActivity {
         Date date = new Date();
         @SuppressLint("SimpleDateFormat")
         String fileDate = new SimpleDateFormat("dd/MM/yyyy").format(date);
-        String fileTime = new SimpleDateFormat("HH:mm Z").format(date);
-
+        DateFormat df = new SimpleDateFormat("hh:mm a");
+        String fileTime = df.format(date);
         @SuppressLint("SimpleDateFormat")
         String filePrefix = new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
         String pathToStoreRecent = appFolder + "/" + filePrefix + fileName;
-        copyFile(filePath, pathToStoreRecent);
+        try {
+            copyFile(filePath, pathToStoreRecent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (recentFiles.size() == max_recent_files) {
-            File file = new File(recentFiles.get(0).getmPath());
-            boolean isDeleted = file.delete();
+            boolean isDeleted = deleteRecentFile(0);
             if (isDeleted) {
                 Log.d(EXTRAS_CSV_FILE_NAME, recentFiles.get(0).getmPath() + " is deleted");
             } else {
                 Log.d(EXTRAS_CSV_FILE_NAME, recentFiles.get(0).getmPath() + " is NOT deleted");
             }
-
-            //Removes the deleted file from the recentFiles Arraylist
-            recentFiles.remove(0);
 
             recentFiles.add(new RecentlyOpened(pathToStoreRecent, fileDate, fileTime));
         } else {
@@ -190,6 +220,17 @@ public class MainActivity extends AppCompatActivity {
         prefsEditor.putString(PREFS_CSV_PATH_NAMES, gson.toJson(recentFiles));
         prefsEditor.apply();
     }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(this.getString(R.string.pref_show_recent))) {
+            showRecentFiles = sharedPreferences.getBoolean(this.getString(R.string.pref_show_recent), false);
+            if (showRecentFiles) readAndDisplayRecentFiles();
+        } else if (key.equals(this.getString(R.string.pref_max_recent_files))) {
+            max_recent_files = Integer.parseInt(sharedPreferences.getString(this.getString(R.string.pref_max_recent_files), "5"));
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -223,13 +264,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void copyFile(String from, String to) {
+    private void copyFile(String from, String to) throws IOException {
         File source = new File(from);
         File destination = new File(to);
-        try {
+        //Delete File if it already exist
+        for (int i = 0; i < recentFiles.size(); i++) {
+            if (FileUtils.contentEquals(source, new File(recentFiles.get(i).getmPath()))) {
+                deleteRecentFile(i);
+            }
+        }
+
+        if (!FileUtils.contentEquals(source, destination)) {
             FileUtils.copyFile(source, destination);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -262,6 +308,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, CSV_UPLOAD_REQUEST_CODE);
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
