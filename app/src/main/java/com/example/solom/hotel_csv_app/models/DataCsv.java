@@ -1,4 +1,4 @@
-package com.example.solom.hotel_csv_app;
+package com.example.solom.hotel_csv_app.models;
 
 /**
  * Created by enyason on 11/6/18.

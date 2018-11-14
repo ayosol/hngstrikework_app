@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.solom.hotel_csv_app.R;
-import com.example.solom.hotel_csv_app.RecentlyOpened;
+import com.example.solom.hotel_csv_app.models.RecentlyOpened;
 
 import java.util.List;
 
@@ -40,6 +40,7 @@ public class RecentlyOpenedRvAdapter extends RecyclerView.Adapter<RecentlyOpened
         RecentlyOpened recentFiles = mFileList.get(i);
         fileHolder.mTitle_tv.setText(recentFiles.getmPath().substring(mFileList.get(i).getmPath().lastIndexOf("/")));
         fileHolder.mDate_tv.setText(recentFiles.getmDate());
+        fileHolder.mTime_tv.setText(recentFiles.getmTime());
     }
 
     @Override
@@ -51,11 +52,13 @@ public class RecentlyOpenedRvAdapter extends RecyclerView.Adapter<RecentlyOpened
 
         private final TextView mTitle_tv;
         private final TextView mDate_tv;
+        private final TextView mTime_tv;
 
         public FileHolder(@NonNull View itemView) {
             super(itemView);
             mTitle_tv = itemView.findViewById(R.id.recently_opened_rv_item_title);
             mDate_tv = itemView.findViewById(R.id.recently_opened_rv_item_date);
+            mTime_tv = itemView.findViewById(R.id.recently_opened_rv_item_time);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

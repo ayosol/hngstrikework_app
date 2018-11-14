@@ -1,15 +1,19 @@
 package com.example.solom.hotel_csv_app;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Telephony;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +21,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.solom.hotel_csv_app.adapter.CsvAdapter;
+import com.example.solom.hotel_csv_app.models.DataCsv;
 
 import java.util.ArrayList;
 
@@ -33,6 +39,10 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     public static final String SMS_DELIVERED_ACTION = "com.example.solom.hotel_csv_app.SMS_DELIVERED";
     public static final String EXTRA_NUMBER = "number";
     public static final String EXTRA_MESSAGE = "message";
+    private static final String PERMISSION_TAG = "PERMISSION";
+    public static final int SMS_PERMISSION_CODE = 102;
+
+
     private IntentFilter intentFilter;
     private BroadcastReceiver resultsReceiver;
 
@@ -40,8 +50,11 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     CsvAdapter adapter;
     RecyclerView.LayoutManager layoutManager;
     private SmsManager smsManager;
-    private ArrayList<DataCsv> dataCopy;
     private ArrayList<DataCsv> data;
+    private ArrayList<DataCsv> dataCopy = new ArrayList<>();
+    private ArrayList<DataCsv> failedSMS = new ArrayList<>();
+
+    private int smsSendingindex = 0;
 
 
     @Override
@@ -108,76 +121,6 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         unregisterReceiver(resultsReceiver);
     }
 
-    public void delaySms(final int i, final ArrayList<DataCsv> contact) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                smsManager.sendTextMessage(contact.get(i).getPhone(), null, contact.get(i).getMessage(), null, null);
-            }
-        }, 2000);
-    }
-
-    private void sendMultipleSMS(ArrayList<DataCsv> selectedData) {
-        //	displayDialog();
-        for (int i = 0; i < selectedData.size(); i++) {
-            delaySms(i, selectedData);
-        }
-        //dismissDialog();
-    }
-
-    private void sendSingleSMS(int pos) {
-        //	displayDialog();
-        smsManager.sendTextMessage(data.get(pos).getPhone(), null, data.get(pos).getMessage(), null, null);
-        //dismissDialog();
-    }
-
-    //Sends SMS to all numbers in CSV
-    private void sendNextSMS() {
-        // We're going to remove numbers and messages from
-        // the lists as we send, so if the lists are empty, we're done.
-        if (dataCopy.size() == 0) {
-            return;
-        }
-
-        // The list size is a sufficiently unique request code,
-        // for the PendingIntent since it decrements for each send.
-        int requestCode = dataCopy.size();
-
-        String number = dataCopy.get(0).getPhone();
-        String message = dataCopy.get(0).getMessage();
-
-        // The Intents must be implicit for this example,
-        // as we're registering our Receiver dynamically.
-        Intent sentIntent = new Intent(SMS_SENT_ACTION);
-        Intent deliveredIntent = new Intent(SMS_DELIVERED_ACTION);
-
-        // We attach the recipient's number and message to
-        // the Intents for easy retrieval in the Receiver.
-        sentIntent.putExtra(EXTRA_NUMBER, number);
-        sentIntent.putExtra(EXTRA_MESSAGE, message);
-        deliveredIntent.putExtra(EXTRA_NUMBER, number);
-        deliveredIntent.putExtra(EXTRA_MESSAGE, message);
-
-        // Construct the PendingIntents for the results.
-        // FLAG_ONE_SHOT cancels the PendingIntent after use so we
-        // can safely reuse the request codes in subsequent runs.
-        PendingIntent sentPI = PendingIntent.getBroadcast(this,
-                requestCode,
-                sentIntent,
-                PendingIntent.FLAG_ONE_SHOT);
-
-        PendingIntent deliveredPI = PendingIntent.getBroadcast(this,
-                requestCode,
-                deliveredIntent,
-                PendingIntent.FLAG_ONE_SHOT);
-
-        // Send our message.
-        smsManager.sendTextMessage(number, null, message, sentPI, deliveredPI);
-
-        // Remove the number and message we just sent to from the lists.
-        dataCopy.remove(0);
-    }
-
     private void displayDetailsDialog(final int pos) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View view = LayoutInflater.from(this).inflate(R.layout.items_detials_dialog, null);
@@ -195,6 +138,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             public void onClick(View v) {
                 sendSingleSMS(pos);
                 dialog.dismiss();
+
             }
         });
         view.findViewById(R.id.details_schedule_btn).setOnClickListener(new View.OnClickListener() {
@@ -211,6 +155,81 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
+    }
+
+    private void sendMultipleSMS(ArrayList<DataCsv> selectedData) {
+        if (checkPermission(Manifest.permission.SEND_SMS, SMS_PERMISSION_CODE)) {
+
+            //TODO:	Display Loading Dialog
+            if (!dataCopy.isEmpty()) dataCopy.clear();
+            dataCopy = selectedData;
+            sendNextSMS();
+        }
+    }
+
+    private void sendSingleSMS(int pos) {
+        if (checkPermission(Manifest.permission.SEND_SMS, SMS_PERMISSION_CODE)) {
+            //TODO:Display Loading Dialog
+            dataCopy.clear();
+            dataCopy.add(data.get(pos));
+            sendNextSMS();
+            Toast.makeText(ReadAndDisplayActivity.this, "SMS sent", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    //Sends SMS to all numbers in dataCopy
+    private void sendNextSMS() {
+        if (checkPermission(Manifest.permission.SEND_SMS, SMS_PERMISSION_CODE)) {
+            // We're going to remove numbers and messages from
+            // the lists as we send, so if the lists are empty, we're done.
+            if (dataCopy.size() == 0) {
+                smsSendingindex = 0;
+                //TODO:Dssplay Confirmation Dialog
+                return;
+            }
+
+            // The list size is a sufficiently unique request code,
+            // for the PendingIntent since it decrements for each send.
+            int requestCode = dataCopy.size();
+
+            String number = dataCopy.get(0).getPhone();
+            String message = dataCopy.get(0).getMessage();
+
+            // The Intents must be implicit for this example,
+            // as we're registering our Receiver dynamically.
+            Intent sentIntent = new Intent(SMS_SENT_ACTION);
+            Intent deliveredIntent = new Intent(SMS_DELIVERED_ACTION);
+
+            // We attach the recipient's number and message to
+            // the Intents for easy retrieval in the Receiver.
+            sentIntent.putExtra(EXTRA_NUMBER, number);
+            sentIntent.putExtra(EXTRA_MESSAGE, message);
+            deliveredIntent.putExtra(EXTRA_NUMBER, number);
+            deliveredIntent.putExtra(EXTRA_MESSAGE, message);
+
+            // Construct the PendingIntents for the results.
+            // FLAG_ONE_SHOT cancels the PendingIntent after use so we
+            // can safely reuse the request codes in subsequent runs.
+            PendingIntent sentPI = PendingIntent.getBroadcast(this,
+                    requestCode,
+                    sentIntent,
+                    PendingIntent.FLAG_ONE_SHOT);
+
+            PendingIntent deliveredPI = PendingIntent.getBroadcast(this,
+                    requestCode,
+                    deliveredIntent,
+                    PendingIntent.FLAG_ONE_SHOT);
+
+            // Send our message.
+            smsManager.sendTextMessage(number, null, message, sentPI, deliveredPI);
+
+            smsSendingindex++;
+            Toast.makeText(this, "Sending... " + smsSendingindex + "/" + data.size(), Toast.LENGTH_SHORT).show();
+
+            // Remove the number and message we just sent to from the lists.
+            dataCopy.remove(0);
+        }
     }
 
     private class SmsResultReceiver extends BroadcastReceiver {
@@ -231,6 +250,13 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             if (SMS_SENT_ACTION.equals(action)) {
                 int resultCode = getResultCode();
                 result = "Send result : " + translateSentResult(resultCode);
+                Log.v("SMS_SENT_ACTION", result);
+
+                //Keeping Track of SMS not sent
+                if (!translateSentResult(resultCode).equals(getString(R.string.sms_action_sent_Activity_RESULT_OK))) {
+                    failedSMS.add(new DataCsv(number, message));
+                }
+
                 // The current send is complete. Send the next one.
                 sendNextSMS();
             }
@@ -255,26 +281,25 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
                 // getResultCode() is not reliable for delivery results.
                 // We need to get the status from the SmsMessage.
                 result = "Delivery result : " + translateDeliveryStatus(sms.getStatus());
+                result = number + ", " + message + " " + result;
+                Log.v("SMS_DELIVERED_ACTION", result);
             }
-
-            result = number + ", " + message + "\n" + result;
-            Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
         }
 
         String translateSentResult(int resultCode) {
             switch (resultCode) {
                 case Activity.RESULT_OK:
-                    return "Activity.RESULT_OK";
+                    return getString(R.string.sms_action_sent_Activity_RESULT_OK);
                 case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                    return "SmsManager.RESULT_ERROR_GENERIC_FAILURE";
+                    return getString(R.string.sms_action_sent_SmsManager_RESULT_ERROR_GENERIC_FAILURE);
                 case SmsManager.RESULT_ERROR_RADIO_OFF:
-                    return "SmsManager.RESULT_ERROR_RADIO_OFF";
+                    return getString(R.string.sms_action_sent_SmsManager_RESULT_ERROR_RADIO_OFF);
                 case SmsManager.RESULT_ERROR_NULL_PDU:
-                    return "SmsManager.RESULT_ERROR_NULL_PDU";
+                    return getString(R.string.sms_action_sent_SmsManager_RESULT_ERROR_NULL_PDU);
                 case SmsManager.RESULT_ERROR_NO_SERVICE:
-                    return "SmsManager.RESULT_ERROR_NO_SERVICE";
+                    return getString(R.string.sms_action_sent_SmsManager_RESULT_ERROR_NO_SERVICE);
                 default:
-                    return "Unknown error code";
+                    return getString(R.string.unknown_error_code);
             }
         }
 
@@ -293,6 +318,35 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             }
         }
     }
+
+
+    public boolean checkPermission(String permission, int requestCode) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(this,
+                    permission) == PackageManager.PERMISSION_GRANTED) {
+                Log.v(PERMISSION_TAG, "Permission is granted");
+                return true;
+            } else {
+                Log.v(PERMISSION_TAG, "Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
+                return false;
+            }
+        } else {
+            //permission is automatically granted on sdk<23 upon installation
+            Log.v(PERMISSION_TAG, "Permission is granted");
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.v(PERMISSION_TAG, "Permission: " + permissions[0] + "was " + grantResults[0]);
+            Toast.makeText(ReadAndDisplayActivity.this, "Permission Granted,Please Resend the SMS...", Toast.LENGTH_LONG).show();
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
