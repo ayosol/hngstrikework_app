@@ -143,8 +143,8 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
                 TextView successfulSmsTv = view.findViewById(R.id.confirmation_successful_txt);
                 TextView failedSmsTv = view.findViewById(R.id.confirmation_failed_txt);
                 int sent = smsToSendSize - failedSMS.size();
-                successfulSmsTv.setText("" + sent + "Sent");
-                failedSmsTv.setText("" + failedSMS.size() + "Failed");
+                successfulSmsTv.setText("" + sent + " Sent");
+                failedSmsTv.setText("" + failedSMS.size() + " Failed");
                 okBtn.setOnClickListener(new View.OnClickListener() {
 
                     @Override
