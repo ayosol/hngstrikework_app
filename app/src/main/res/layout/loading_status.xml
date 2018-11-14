@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    android:background="#1f96dc"
+    android:elevation="6dp">
+
+
+    <!--The completed status correct background here-->
+
+
+    <ImageView
+        android:id="@+id/completed_mark_bkgd"
+        android:layout_width="136dp"
+        android:layout_height="134dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:src="@drawable/circle"
+        android:tint="#0b0ebc"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/progressBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.82" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="135dp"
+        android:layout_height="125dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:src="@drawable/ic_action_tick"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/completed_mark_bkgd"
+        app:layout_constraintEnd_toEndOf="@+id/completed_mark_bkgd"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/completed_mark_bkgd"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+    <!--The completed status ends here
+    (Visibility set to gone on the corect symbol background)-->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="160dp"
+        android:layout_height="162dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:indeterminate="true"
+        android:indeterminateTint="#ffffff"
+        android:indeterminateTintMode="src_atop"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.237" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.512"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar">
+
+
+        <TextView
+            android:id="@+id/sending_status"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Sending..."
+            android:textColor="#ffffff"
+            android:textSize="28sp"
+            tools:layout_editor_absoluteX="162dp"
+            tools:layout_editor_absoluteY="307dp" />
+
+    </LinearLayout>
+
+    <!--This is the layout that controls the completed status-->
+    <LinearLayout
+        android:id="@+id/completed_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.519"
+        app:layout_constraintStart_toStartOf="parent">
+
+
+        <TextView
+            android:id="@+id/completed_status"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="All Messages Sent!"
+            android:textColor="#ffffff"
+            android:textSize="28sp"
+            tools:layout_editor_absoluteX="162dp"
+            tools:layout_editor_absoluteY="307dp" />
+
+    </LinearLayout>
+    <!--The completed status ends here (Visibility set to gone on linear layout)-->
+
+    <!-- The whole counter is controlled by the layout id
+    counter and is defaulted to visible-->
+    <LinearLayout
+        android:id="@+id/counter"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+        <TextView
+            android:id="@+id/sent_value"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:gravity="right"
+            android:text="0"
+            android:textColor="#ffffff"
+            android:textSize="29sp"
+            tools:layout_editor_absoluteX="162dp"
+            tools:layout_editor_absoluteY="307dp" />
+
+        <TextView
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:gravity="center"
+            android:text="/"
+            android:textColor="#ffffff"
+            android:textSize="29sp"
+            tools:layout_editor_absoluteX="162dp"
+            tools:layout_editor_absoluteY="307dp" />
+
+        <TextView
+            android:id="@+id/total_msg_value"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:gravity="left"
+            android:text="9"
+            android:textColor="#ffffff"
+            android:textSize="29sp"
+            tools:layout_editor_absoluteX="162dp"
+            tools:layout_editor_absoluteY="307dp" />
+
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
