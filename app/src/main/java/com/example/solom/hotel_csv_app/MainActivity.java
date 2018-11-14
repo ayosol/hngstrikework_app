@@ -2,6 +2,7 @@ package com.example.solom.hotel_csv_app;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -14,14 +15,17 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.solom.hotel_csv_app.adapter.RecentlyOpenedRvAdapter;
@@ -147,14 +151,31 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 };
                 RecentlyOpenedRvAdapter.OnItemLongClickListener onItemLongClickListener = new RecentlyOpenedRvAdapter.OnItemLongClickListener() {
                     @Override
-                    public void onItemLongClick(View view, int adapterPosition) {
-                        boolean isDeleted = deleteRecentFile(adapterPosition);
-                        if (isDeleted) {
-                            Toast.makeText(MainActivity.this, "File Deleted Successfully ", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, "File Not Deleted...", Toast.LENGTH_SHORT).show();
-                        }
-                        adapter.notifyDataSetChanged();
+                    public void onItemLongClick(View view, final int adapterPosition) {
+                        String fileName = recentFiles.get(adapterPosition).getmPath().substring(recentFiles.get(adapterPosition).getmPath().lastIndexOf("/") + 1);
+                        String txt = "Remove This File?";
+                        TextView dialogView = new TextView(MainActivity.this);
+                        dialogView.setText(fileName);
+                        dialogView.setTextSize(18);
+                        dialogView.setPadding(16, 16, 16, 16);
+                        dialogView.setGravity(Gravity.CENTER);
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle(txt).setView(dialogView).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteRecentFile(adapterPosition);
+                                adapter.notifyDataSetChanged();
+                                if (recentFiles.isEmpty()) {
+                                    findViewById(R.id.recently_opened_layout).setVisibility(View.GONE);
+                                    findViewById(R.id.main_layout).setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).create().show();
                     }
                 };
                 adapter.setOnItemClickListener(onItemClickListener);
@@ -174,13 +195,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     public boolean deleteRecentFile(int pos) {
         File file = new File(recentFiles.get(pos).getmPath());
-
-        if (file.delete()) {
-            recentFiles.remove(pos);
-            prefsEditor = sharedPrefs.edit();
-            prefsEditor.putString(PREFS_CSV_PATH_NAMES, gson.toJson(recentFiles));
-            prefsEditor.apply();
-        }
+        recentFiles.remove(pos);
+        prefsEditor = sharedPrefs.edit();
+        prefsEditor.putString(PREFS_CSV_PATH_NAMES, gson.toJson(recentFiles));
+        prefsEditor.apply();
         return file.delete();
     }
 

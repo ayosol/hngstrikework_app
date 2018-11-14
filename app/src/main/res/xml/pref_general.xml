@@ -25,7 +25,7 @@
         android:summary="@string/schedule_notification_summary"
         android:title="@string/schedule_notification" />
     <CheckBoxPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:enabled="false"
         android:key="@string/pref_show_estimate"
         android:summary="@string/show_estimate_summary"
