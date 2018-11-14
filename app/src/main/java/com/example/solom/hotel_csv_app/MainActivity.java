@@ -35,6 +35,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.main_layout).setVisibility(View.GONE);
 
                 RecyclerView recentFilesRv = findViewById(R.id.recently_opened_rv);
-                RecentlyOpenedRvAdapter adapter = new RecentlyOpenedRvAdapter(recentFiles, this);
+                final RecentlyOpenedRvAdapter adapter = new RecentlyOpenedRvAdapter(recentFiles, this);
                 recentFilesRv.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
                 recentFilesRv.setHasFixedSize(true);
                 recentFilesRv.setLayoutManager(new LinearLayoutManager(this));
@@ -139,7 +140,20 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(readAndDisplayIntent);
                     }
                 };
+                RecentlyOpenedRvAdapter.OnItemLongClickListener onItemLongClickListener = new RecentlyOpenedRvAdapter.OnItemLongClickListener() {
+                    @Override
+                    public void onItemLongClick(View view, int adapterPosition) {
+                        boolean isDeleted = deleteRecentFile(adapterPosition);
+                        if (isDeleted) {
+                            Toast.makeText(MainActivity.this, "File Deleted Successfully " + adapterPosition, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "File Not Deleted..." + adapterPosition, Toast.LENGTH_SHORT).show();
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                };
                 adapter.setOnItemClickListener(onItemClickListener);
+                adapter.setOnLongClickListener(onItemLongClickListener);
                 recentFilesRv.setAdapter(adapter);
 
             } else {
@@ -154,6 +168,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public boolean deleteRecentFile(int pos) {
+        File file = new File(recentFiles.get(pos).getmPath());
+
+        //Removes the deleted file from the recentFiles Arraylist
+        if (file.delete()) recentFiles.remove(pos);
+        return file.delete();
+    }
+
     private void saveRecentFiles(String filePath, String fileName) {
         //TODO: Check length of recently saved array
         //TODO: If greater than max_recent_files
@@ -163,23 +185,19 @@ public class MainActivity extends AppCompatActivity {
         Date date = new Date();
         @SuppressLint("SimpleDateFormat")
         String fileDate = new SimpleDateFormat("dd/MM/yyyy").format(date);
-        String fileTime = new SimpleDateFormat("HH:mm Z").format(date);
-
+        DateFormat df = new SimpleDateFormat("hh:mm a");
+        String fileTime = df.format(date);
         @SuppressLint("SimpleDateFormat")
         String filePrefix = new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
         String pathToStoreRecent = appFolder + "/" + filePrefix + fileName;
         copyFile(filePath, pathToStoreRecent);
         if (recentFiles.size() == max_recent_files) {
-            File file = new File(recentFiles.get(0).getmPath());
-            boolean isDeleted = file.delete();
+            boolean isDeleted = deleteRecentFile(0);
             if (isDeleted) {
                 Log.d(EXTRAS_CSV_FILE_NAME, recentFiles.get(0).getmPath() + " is deleted");
             } else {
                 Log.d(EXTRAS_CSV_FILE_NAME, recentFiles.get(0).getmPath() + " is NOT deleted");
             }
-
-            //Removes the deleted file from the recentFiles Arraylist
-            recentFiles.remove(0);
 
             recentFiles.add(new RecentlyOpened(pathToStoreRecent, fileDate, fileTime));
         } else {
