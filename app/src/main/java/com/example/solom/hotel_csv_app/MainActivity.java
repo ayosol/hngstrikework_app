@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.example.solom.hotel_csv_app.adapter.RecentlyOpenedRvAdapter;
 import com.example.solom.hotel_csv_app.models.RecentlyOpened;
+import com.example.solom.hotel_csv_app.utils.Constants;
 import com.example.solom.hotel_csv_app.utils.PathUtil;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
@@ -53,10 +54,6 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    public static String EXTRAS_CSV_PATH_NAME = "com.example.solom.hotel_csv_app.MainActivity.PathHolder";
-    public static String PREFS_CSV_PATH_NAMES = "com.example.solom.hotel_csv_app.MainActivity.PathHolder";
-    public static String SHARED_PREFERENCE_NAME = "com.example.solom.hotel_csv_app.MainActivity.SharedPrefs";
-    private static final String TAG = "PERMISSION";
     private String appFolder;
     private SharedPreferences sharedPrefs;
     private SharedPreferences.Editor prefsEditor;
@@ -68,8 +65,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     FloatingActionButton readCsvFile;
     @BindView(R.id.upload_fab_2)
     FloatingActionButton readCsvFile_2;
-
-    public static final String EXTRAS_CSV_FILE_NAME = "MainActivity.filePath";
     private boolean showRecentFiles;
 
     @Override
@@ -80,8 +75,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         appFolder = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.example.solom.hotel_csv_app";
         gson = new Gson();
         recentFiles = new ArrayList<>();
-        sharedPrefs = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE);
-        boolean isFirstLaunch = sharedPrefs.getBoolean("IS_FIRST_LAUNCH", true);
+        sharedPrefs = getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+        boolean isFirstLaunch = sharedPrefs.getBoolean(Constants.IS_FIRST_LAUNCH, true);
         if (isFirstLaunch)
             showTapTarget(R.id.upload_fab, "Get Started!", "Click this button to upload a .csv file");
         //Reading the show recent files preference from settings
@@ -129,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         //TODO: Check if there are any saved recently opened file
         //TODO: Hide or Display Recently Saved RecyclerView
 
-        String pathsJsonTxt = sharedPrefs.getString(PREFS_CSV_PATH_NAMES, "-1");
+        String pathsJsonTxt = sharedPrefs.getString(Constants.PREFS_CSV_PATH_NAMES, "-1");
         if (!pathsJsonTxt.equalsIgnoreCase("-1")) {
             recentFiles = gson.fromJson(pathsJsonTxt, new TypeToken<ArrayList<RecentlyOpened>>() {
             }.getType());
@@ -149,8 +144,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                         Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
                         String path = recentFiles.get(adapterPosition).getmPath();
                         String csvFileName = path.substring(path.lastIndexOf('/') + 1);
-                        readAndDisplayIntent.putExtra(EXTRAS_CSV_PATH_NAME, path);
-                        readAndDisplayIntent.putExtra(EXTRAS_CSV_FILE_NAME, csvFileName);
+                        readAndDisplayIntent.putExtra(Constants.EXTRAS_CSV_PATH_NAME, path);
+                        readAndDisplayIntent.putExtra(Constants.EXTRAS_CSV_FILE_NAME, csvFileName);
                         startActivity(readAndDisplayIntent);
                     }
                 };
@@ -193,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             }
         } else {
             prefsEditor = sharedPrefs.edit();
-            prefsEditor.putString(PREFS_CSV_PATH_NAMES, gson.toJson(recentFiles));
+            prefsEditor.putString(Constants.PREFS_CSV_PATH_NAMES, gson.toJson(recentFiles));
             prefsEditor.apply();
         }
     }
@@ -202,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         File file = new File(recentFiles.get(pos).getmPath());
         recentFiles.remove(pos);
         prefsEditor = sharedPrefs.edit();
-        prefsEditor.putString(PREFS_CSV_PATH_NAMES, gson.toJson(recentFiles));
+        prefsEditor.putString(Constants.PREFS_CSV_PATH_NAMES, gson.toJson(recentFiles));
         prefsEditor.apply();
         return file.delete();
     }
@@ -229,9 +224,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         if (recentFiles.size() == max_recent_files) {
             boolean isDeleted = deleteRecentFile(0);
             if (isDeleted) {
-                Log.d(EXTRAS_CSV_FILE_NAME, recentFiles.get(0).getmPath() + " is deleted");
+                Log.d(Constants.EXTRAS_CSV_FILE_NAME, recentFiles.get(0).getmPath() + " is deleted");
             } else {
-                Log.d(EXTRAS_CSV_FILE_NAME, recentFiles.get(0).getmPath() + " is NOT deleted");
+                Log.d(Constants.EXTRAS_CSV_FILE_NAME, recentFiles.get(0).getmPath() + " is NOT deleted");
             }
 
             recentFiles.add(new RecentlyOpened(pathToStoreRecent, fileDate, fileTime));
@@ -240,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
         //TODO: Save the array to Shared Preference
         prefsEditor = sharedPrefs.edit();
-        prefsEditor.putString(PREFS_CSV_PATH_NAMES, gson.toJson(recentFiles));
+        prefsEditor.putString(Constants.PREFS_CSV_PATH_NAMES, gson.toJson(recentFiles));
         prefsEditor.apply();
     }
 
@@ -272,8 +267,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                         assert PathHolder != null;
                         String csvFileName = PathHolder.substring(PathHolder.lastIndexOf('/') + 1);
                         final Intent readAndDisplayIntent = new Intent(MainActivity.this, ReadAndDisplayActivity.class);
-                        readAndDisplayIntent.putExtra(EXTRAS_CSV_PATH_NAME, PathHolder);
-                        readAndDisplayIntent.putExtra(EXTRAS_CSV_FILE_NAME, csvFileName);
+                        readAndDisplayIntent.putExtra(Constants.EXTRAS_CSV_PATH_NAME, PathHolder);
+                        readAndDisplayIntent.putExtra(Constants.EXTRAS_CSV_FILE_NAME, csvFileName);
 
                         if (showRecentFiles) {
                             saveRecentFiles(PathHolder, csvFileName);
@@ -306,16 +301,16 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         if (Build.VERSION.SDK_INT >= 23) {
             if (ContextCompat.checkSelfPermission(this,
                     permission) == PackageManager.PERMISSION_GRANTED) {
-                Log.v(TAG, "Permission is granted");
+                Log.v(Constants.PERMISSION_TAG, "Permission is granted");
                 return true;
             } else {
-                Log.v(TAG, "Permission is revoked");
+                Log.v(Constants.PERMISSION_TAG, "Permission is revoked");
                 ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
                 return false;
             }
         } else {
             //permission is automatically granted on sdk<23 upon installation
-            Log.v(TAG, "Permission is granted");
+            Log.v(Constants.PERMISSION_TAG, "Permission is granted");
             return true;
         }
     }
@@ -324,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Log.v(TAG, "Permission: " + permissions[0] + "was " + grantResults[0]);
+            Log.v(Constants.PERMISSION_TAG, "Permission: " + permissions[0] + "was " + grantResults[0]);
             if (requestCode == CSV_UPLOAD_REQUEST_CODE) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("*/*");
