@@ -22,8 +22,11 @@ public class CsvParser {
 
         try {
             reader = new CSVReader(new FileReader(csv_path));
+            int index = 0;
             while ((nextLine = reader.readNext()) != null) {
-                data.add(new DataCsv(nextLine[0], nextLine[1]));
+                //Skips CSV first rows (Column Headers/Titles)
+                if (index != 0) data.add(new DataCsv(nextLine[0], nextLine[1]));
+                index++;
             }
         } catch (IOException e) {
             e.printStackTrace();
