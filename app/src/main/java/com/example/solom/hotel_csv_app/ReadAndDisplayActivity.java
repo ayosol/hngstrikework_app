@@ -34,18 +34,13 @@ import android.widget.Toast;
 
 import com.example.solom.hotel_csv_app.adapter.CsvAdapter;
 import com.example.solom.hotel_csv_app.models.DataCsv;
+import com.example.solom.hotel_csv_app.utils.Constants;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
 
 import java.util.ArrayList;
 
 public class ReadAndDisplayActivity extends AppCompatActivity {
-    public static final String SMS_SENT_ACTION = "com.example.solom.hotel_csv_app.SMS_SENT";
-    public static final String SMS_DELIVERED_ACTION = "com.example.solom.hotel_csv_app.SMS_DELIVERED";
-    public static final String EXTRA_NUMBER = "number";
-    public static final String EXTRA_MESSAGE = "message";
-    private static final String PERMISSION_TAG = "PERMISSION";
-    public static final int SMS_PERMISSION_CODE = 102;
     private final int DIALOG_TYPE_LOADING = 1;
     private final int DIALOG_TYPE_CONFIRMATION = 2;
 
@@ -69,24 +64,24 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_and_display);
-        SharedPreferences sharedPref = getSharedPreferences(MainActivity.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
 
-        boolean isFirstLaunch = sharedPref.getBoolean("IS_FIRST_LAUNCH", true);
+        boolean isFirstLaunch = sharedPref.getBoolean(Constants.IS_FIRST_LAUNCH, true);
         if (isFirstLaunch) {
             showTapTarget(R.id.send_fab, "Send SMS", "Use this button to send SMS to all numbers in the CSV file");
-            sharedPref.edit().putBoolean("IS_FIRST_LAUNCH", false).apply();
+            sharedPref.edit().putBoolean(Constants.IS_FIRST_LAUNCH, false).apply();
         }
         Bundle extras = getIntent().getExtras();
         assert extras != null;
-        String csvPath = extras.getString(MainActivity.EXTRAS_CSV_PATH_NAME);
-        String csvFileName = extras.getString(MainActivity.EXTRAS_CSV_FILE_NAME);
+        String csvPath = extras.getString(Constants.EXTRAS_CSV_PATH_NAME);
+        String csvFileName = extras.getString(Constants.EXTRAS_CSV_FILE_NAME);
         setupActionBar(csvFileName);
 
         smsManager = SmsManager.getDefault();
         resultsReceiver = new SmsResultReceiver();
 
-        intentFilter = new IntentFilter(SMS_SENT_ACTION);
-        intentFilter.addAction(SMS_DELIVERED_ACTION);
+        intentFilter = new IntentFilter(Constants.SMS_SENT_ACTION);
+        intentFilter.addAction(Constants.SMS_DELIVERED_ACTION);
 
         data = new ArrayList<>();
         recyclerView = findViewById(R.id.rv_csv);
@@ -111,8 +106,10 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dataCopy = (ArrayList<DataCsv>) data.clone();
                 smsToSendSize = dataCopy.size();
-                displayDialog(DIALOG_TYPE_LOADING);
-                sendNextSMS();
+                if (checkPermission(Manifest.permission.SEND_SMS, Constants.SMS_PERMISSION_CODE)) {
+                    displayDialog(DIALOG_TYPE_LOADING);
+                    sendNextSMS();
+                }
             }
         });
     }
@@ -209,24 +206,21 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
     }
 
     private void sendMultipleSMS(ArrayList<DataCsv> selectedData) {
-        if (checkPermission(Manifest.permission.SEND_SMS, SMS_PERMISSION_CODE)) {
-
-            //TODO:	Display Loading Dialog
+        if (!dataCopy.isEmpty()) dataCopy.clear();
+        dataCopy = selectedData;
+        smsToSendSize = dataCopy.size();
+        if (checkPermission(Manifest.permission.SEND_SMS, Constants.SMS_PERMISSION_CODE)) {
             displayDialog(DIALOG_TYPE_LOADING);
-            if (!dataCopy.isEmpty()) dataCopy.clear();
-            dataCopy = selectedData;
-            smsToSendSize = dataCopy.size();
             sendNextSMS();
         }
     }
 
     private void sendSingleSMS(int pos) {
-        if (checkPermission(Manifest.permission.SEND_SMS, SMS_PERMISSION_CODE)) {
-            //TODO:Display Loading Dialog
+        dataCopy.clear();
+        dataCopy.add(data.get(pos));
+        smsToSendSize = dataCopy.size();
+        if (checkPermission(Manifest.permission.SEND_SMS, Constants.SMS_PERMISSION_CODE)) {
             displayDialog(DIALOG_TYPE_LOADING);
-            dataCopy.clear();
-            dataCopy.add(data.get(pos));
-            smsToSendSize = dataCopy.size();
             sendNextSMS();
             Toast.makeText(ReadAndDisplayActivity.this, "SMS sent!", Toast.LENGTH_SHORT).show();
         }
@@ -235,7 +229,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
 
     //Sends SMS to all numbers in dataCopy
     private void sendNextSMS() {
-        if (checkPermission(Manifest.permission.SEND_SMS, SMS_PERMISSION_CODE)) {
+        if (checkPermission(Manifest.permission.SEND_SMS, Constants.SMS_PERMISSION_CODE)) {
             // We're going to remove numbers and messages from
             // the lists as we send, so if the lists are empty, we're done.
             if (dataCopy.size() == 0) {
@@ -256,15 +250,15 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
 
             // The Intents must be implicit for this example,
             // as we're registering our Receiver dynamically.
-            Intent sentIntent = new Intent(SMS_SENT_ACTION);
-            Intent deliveredIntent = new Intent(SMS_DELIVERED_ACTION);
+            Intent sentIntent = new Intent(Constants.SMS_SENT_ACTION);
+            Intent deliveredIntent = new Intent(Constants.SMS_DELIVERED_ACTION);
 
             // We attach the recipient's number and message to
             // the Intents for easy retrieval in the Receiver.
-            sentIntent.putExtra(EXTRA_NUMBER, number);
-            sentIntent.putExtra(EXTRA_MESSAGE, message);
-            deliveredIntent.putExtra(EXTRA_NUMBER, number);
-            deliveredIntent.putExtra(EXTRA_MESSAGE, message);
+            sentIntent.putExtra(Constants.EXTRA_NUMBER, number);
+            sentIntent.putExtra(Constants.EXTRA_MESSAGE, message);
+            deliveredIntent.putExtra(Constants.EXTRA_NUMBER, number);
+            deliveredIntent.putExtra(Constants.EXTRA_MESSAGE, message);
 
             // Construct the PendingIntents for the results.
             // FLAG_ONE_SHOT cancels the PendingIntent after use so we
@@ -302,11 +296,11 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
             String action = intent.getAction();
 
             // Retrieve the recipient's number and message.
-            String number = intent.getStringExtra(EXTRA_NUMBER);
-            String message = intent.getStringExtra(EXTRA_MESSAGE);
+            String number = intent.getStringExtra(Constants.EXTRA_NUMBER);
+            String message = intent.getStringExtra(Constants.EXTRA_MESSAGE);
 
             // This is the result for a send.
-            if (SMS_SENT_ACTION.equals(action)) {
+            if (Constants.SMS_SENT_ACTION.equals(action)) {
                 int resultCode = getResultCode();
                 result = "Send result : " + translateSentResult(resultCode);
                 Log.v("SMS_SENT_ACTION", result);
@@ -320,7 +314,7 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
                 sendNextSMS();
             }
             // This is the result for a delivery.
-            else if (SMS_DELIVERED_ACTION.equals(action)) {
+            else if (Constants.SMS_DELIVERED_ACTION.equals(action)) {
                 SmsMessage sms = null;
 
                 // A delivery result comes from the service
@@ -383,16 +377,16 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 23) {
             if (ContextCompat.checkSelfPermission(this,
                     permission) == PackageManager.PERMISSION_GRANTED) {
-                Log.v(PERMISSION_TAG, "Permission is granted");
+                Log.v(Constants.PERMISSION_TAG, "Permission is granted");
                 return true;
             } else {
-                Log.v(PERMISSION_TAG, "Permission is revoked");
+                Log.v(Constants.PERMISSION_TAG, "Permission is revoked");
                 ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
                 return false;
             }
         } else {
             //permission is automatically granted on sdk<23 upon installation
-            Log.v(PERMISSION_TAG, "Permission is granted");
+            Log.v(Constants.PERMISSION_TAG, "Permission is granted");
             return true;
         }
     }
@@ -402,8 +396,12 @@ public class ReadAndDisplayActivity extends AppCompatActivity {
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Log.v(PERMISSION_TAG, "Permission: " + permissions[0] + "was " + grantResults[0]);
-            Toast.makeText(ReadAndDisplayActivity.this, "Permission Granted,Please Resend the SMS...", Toast.LENGTH_LONG).show();
+            Log.v(Constants.PERMISSION_TAG, "Permission: " + permissions[0] + "was " + grantResults[0]);
+            Toast.makeText(ReadAndDisplayActivity.this, "Permission Granted", Toast.LENGTH_LONG).show();
+            if (requestCode == Constants.SMS_PERMISSION_CODE) {
+                displayDialog(DIALOG_TYPE_LOADING);
+                sendNextSMS();
+            }
         }
     }
 

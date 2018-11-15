@@ -9,47 +9,53 @@
     android:layout_marginTop="5dp"
     app:cardElevation="3dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="80dp"
+        android:orientation="vertical"
         android:paddingBottom="10dp">
 
         <TextView
             android:id="@+id/recently_opened_rv_item_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_marginEnd="10dp"
             android:layout_marginBottom="20dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="20dp"
             android:text="Managers.csv"
             android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/recently_opened_rv_item_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="14dp"
-            android:text="12/11/2018" />
-
-        <TextView
-            android:id="@+id/recently_opened_rv_item_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="24dp"
-            android:text="12/11/2018" />
-
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_alignParentBottom="true" />
-    </RelativeLayout>
+            android:layout_height="1dp"
+            android:background="#99a" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="5dp"
+            android:weightSum="2">
+
+            <TextView
+                android:id="@+id/recently_opened_rv_item_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start|center_vertical"
+                android:text="10:25 AM" />
+
+            <TextView
+                android:id="@+id/recently_opened_rv_item_time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end|center_vertical"
+                android:text="12/11/2018" />
+        </LinearLayout>
+    </LinearLayout>
 </android.support.v7.widget.CardView>
