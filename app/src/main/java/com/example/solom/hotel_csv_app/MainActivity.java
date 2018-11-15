@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             showTapTarget(R.id.upload_fab, "Get Started!", "Click this button to upload a .csv file");
         //Reading the show recent files preference from settings
         SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        showRecentFiles = defaultPrefs.getBoolean(this.getString(R.string.pref_show_recent), false);
+        showRecentFiles = defaultPrefs.getBoolean(this.getString(R.string.pref_show_recent), true);
         max_recent_files = Integer.parseInt(defaultPrefs.getString(this.getString(R.string.pref_max_recent_files), "5"));
         defaultPrefs.registerOnSharedPreferenceChangeListener(this);
         if (showRecentFiles) {
