@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        appFolder = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.hotel_csv_app";
+        appFolder = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.example.solom.hotel_csv_app";
         gson = new Gson();
         recentFiles = new ArrayList<>();
         sharedPrefs = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE);
